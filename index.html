@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js">
   <style>
     :root {
       --primary: #1a365d;
@@ -1573,6 +1574,7 @@
               <option value="post">贷后管理</option>
             </select>
             ${stageFilter ? `<button class="btn btn-secondary" onclick="App.clearStageFilter()">清除筛选</button>` : ''}
+            <button class="btn btn-primary" onclick="App.exportProjectsXlsx()">导出Excel</button>
           </div>
 
           <div class="section fade-in">
@@ -2117,6 +2119,31 @@
         a.download = `credit-projects-${new Date().toISOString().split('T')[0]}.json`;
         a.click();
         URL.revokeObjectURL(url);
+      },
+
+      exportProjectsXlsx() {
+        const projects = this.getFilteredProjects();
+        const data = projects.map(p => ({
+          '项目编号': p.id,
+          '项目名称': p.name,
+          '客户': (p.customerNames || []).join('; '),
+          '授信金额': p.amount,
+          '授信期限': p.term + '个月',
+          '利率': p.rate + '%',
+          '担保方式': this.getGuaranteeTypeText(p.guaranteeType),
+          '当前阶段': this.getStageText(p.stage),
+          '状态': this.getStatusText(p.status),
+          '创建时间': this.formatDate(p.createdAt)
+        }));
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, '项目列表');
+        const colWidths = [
+          { wch: 12 }, { wch: 20 }, { wch: 30 }, { wch: 12 },
+          { wch: 10 }, { wch: 8 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 12 }
+        ];
+        ws['!cols'] = colWidths;
+        XLSX.writeFile(wb, `信贷项目-${new Date().toISOString().split('T')[0]}.xlsx`);
       },
 
       importData() {
