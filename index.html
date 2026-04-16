@@ -2123,24 +2123,28 @@
       exportProjectsXlsx() {
         const projects = this.getFilteredProjects();
         const headers = ['项目编号', '项目名称', '客户', '授信金额', '授信期限', '利率', '担保方式', '当前阶段', '状态', '创建时间'];
-        const rows = [headers.join('\t')];
+        const escape = (v) => {
+          const s = String(v);
+          return s.includes(',') || s.includes('"') ? `"${s.replace(/"/g, '""')}"` : s;
+        };
+        const rows = [headers.map(escape).join(',')];
         projects.forEach(p => {
           const row = [
-            p.id,
-            p.name,
-            (p.customerNames || []).join('; '),
-            p.amount,
-            p.term + '个月',
-            p.rate + '%',
-            this.getGuaranteeTypeText(p.guaranteeType),
-            this.getStageText(p.stage),
-            this.getStatusText(p.status),
-            this.formatDate(p.createdAt)
-          ].join('\t');
+            escape(p.id),
+            escape(p.name),
+            escape((p.customerNames || []).join('; ')),
+            escape(p.amount),
+            escape(p.term + '个月'),
+            escape(p.rate + '%'),
+            escape(this.getGuaranteeTypeText(p.guaranteeType)),
+            escape(this.getStageText(p.stage)),
+            escape(this.getStatusText(p.status)),
+            escape(this.formatDate(p.createdAt))
+          ].join(',');
           rows.push(row);
         });
         const csv = rows.join('\n');
-        const blob = new Blob(['\ufeff' + csv], { type: 'application/vnd/vnd.ms-excel' });
+        const blob = new Blob(['\ufeff' + csv], { type: 'application/vnd.ms-excel' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
