@@ -1005,6 +1005,14 @@
               <option value="guarantee">担保贷款</option>
             </select>
           </div>
+          <div class="form-group">
+            <label class="form-label">开始时间</label>
+            <input type="date" class="form-input" id="startDate">
+          </div>
+          <div class="form-group">
+            <label class="form-label">结束时间</label>
+            <input type="date" class="form-input" id="endDate">
+          </div>
           <div class="form-group" style="grid-column: span 2;">
             <label class="form-label">备注说明</label>
             <textarea class="form-textarea" id="remark" placeholder="请输入备注说明"></textarea>
@@ -1232,6 +1240,8 @@
           document.getElementById('creditTerm').value = project.term;
           document.getElementById('interestRate').value = project.rate;
           document.getElementById('guaranteeType').value = project.guaranteeType;
+          document.getElementById('startDate').value = project.createdAt ? project.createdAt.split('T')[0] : '';
+          document.getElementById('endDate').value = project.endDate ? project.endDate.split('T')[0] : '';
           document.getElementById('remark').value = project.remark || '';
           this.renderCustomerList();
           this.updateSelectedCustomers(this.currentSelectedCustomers);
@@ -1323,6 +1333,8 @@
         const term = parseInt(document.getElementById('creditTerm').value);
         const rate = document.getElementById('interestRate').value;
         const guaranteeType = document.getElementById('guaranteeType').value;
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
         const remark = document.getElementById('remark').value;
 
         if (!projectName || customerIds.length === 0 || !amount) {
@@ -1346,8 +1358,8 @@
           stage: existingIndex >= 0 ? this.data.projects[existingIndex].stage : 'pre',
           stageProgress: existingIndex >= 0 ? this.data.projects[existingIndex].stageProgress : { pre: 0, mid: 0, post: 0 },
           remark: remark,
-          createdAt: existingIndex >= 0 ? this.data.projects[existingIndex].createdAt : new Date().toISOString(),
-          endDate: existingIndex >= 0 ? this.data.projects[existingIndex].endDate : null,
+          createdAt: startDate ? new Date(startDate).toISOString() : (existingIndex >= 0 ? this.data.projects[existingIndex].createdAt : new Date().toISOString()),
+          endDate: endDate ? new Date(endDate).toISOString() : null,
           tasks: existingIndex >= 0 ? this.data.projects[existingIndex].tasks : this.generateTasks('pending', 'pre')
         };
 
@@ -2505,14 +2517,14 @@ renderTasks() {
 
       renderDurationBar(project) {
         const start = new Date(project.createdAt).getTime();
-        const end = project.status === 'completed' && project.endDate ? new Date(project.endDate).getTime() : Date.now();
+        const end = project.endDate ? new Date(project.endDate).getTime() : Date.now();
         const days = Math.floor((end - start) / (1000 * 60 * 60 * 24));
         const maxDays = 90;
         const percent = Math.min((days / maxDays) * 100, 100);
         const r = Math.min(255, Math.floor((percent / 100) * 255));
         const g = Math.min(255, Math.floor((1 - percent / 100) * 200 + 50));
         const color = `rgb(${r}, ${g}, 80)`;
-        const color2 = project.status === 'completed' ? '#38a169' : color;
+        const color2 = project.endDate ? '#38a169' : color;
         return `
           <div style="display:flex;align-items:center;gap:8px;">
             <div style="flex:1;height:16px;background:var(--border);border-radius:8px;overflow:hidden;max-width:80px;">
