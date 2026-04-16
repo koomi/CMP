@@ -1663,6 +1663,7 @@
                       <td>${this.renderDurationBar(p)}</td>
                       <td>
                         <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="App.editProject('${p.id}')">编辑</button>
+                        <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px; margin-left: 8px;" onclick="App.deleteProject('${p.id}')">删除</button>
                       </td>
                     </tr>
                   `).join('') : `
@@ -1991,8 +1992,8 @@ renderTasks() {
                     <td>${d.rate}%</td>
                     <td>${d.date}</td>
                     <td>
-                      <button class="btn btn-secondary" style="padding:4px 8px;font-size:12px;" onclick="App.editDeposit('${d.id}')">编辑</button>
-                      <button class="btn btn-danger" style="padding:4px 8px;font-size:12px;margin-left:4px;" onclick="App.deleteDeposit('${d.id}')">删除</button>
+                      <button class="btn btn-secondary" style="padding:4px 8px;font-size:12px;margin-right:8px;" onclick="App.editDeposit('${d.id}')">编辑</button>
+                      <button class="btn btn-danger" style="padding:4px 8px;font-size:12px;" onclick="App.deleteDeposit('${d.id}')">删除</button>
                     </td>
                   </tr>
                 `).join('')}
@@ -2527,6 +2528,14 @@ renderTasks() {
       deleteDeposit(id) {
         if (confirm('确定要删除这条存款记录吗？')) {
           this.data.deposits = this.data.deposits.filter(d => d.id !== id);
+          this.saveData();
+          this.render();
+        }
+      },
+
+      deleteProject(id) {
+        if (confirm('确定要删除这个项目吗？')) {
+          this.data.projects = this.data.projects.filter(p => p.id !== id);
           this.saveData();
           this.render();
         }
