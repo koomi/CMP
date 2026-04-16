@@ -953,13 +953,13 @@
             <label class="form-label">项目名称 *</label>
             <input type="text" class="form-input" id="projectName" required placeholder="请输入项目名称">
           </div>
-          <div class="form-group">
+          <div class="form-group" style="grid-column: span 2;">
             <label class="form-label">客户 *（可多选）</label>
-            <select class="form-select" id="customerSelect" multiple style="height: 80px;" onchange="App.onCustomerSelectChange()">
-            </select>
-            <div style="font-size:12px;color:var(--text-light);margin-top:4px;">按住Ctrl可多选</div>
+            <input type="text" class="form-input" id="customerSearch" placeholder="搜索客户..." oninput="App.filterCustomers(this.value)" style="margin-bottom:8px;">
+            <div id="customerList" style="max-height:150px;overflow-y:auto;border:1px solid var(--border);border-radius:4px;padding:8px;">
+            </div>
           </div>
-          <div class="form-group">
+          <div class="form-group" style="grid-column: span 2;">
             <label class="form-label">已选客户</label>
             <div id="selectedCustomers" style="display:flex;flex-wrap:wrap;gap:8px;min-height:32px;padding:8px;background:var(--bg);border-radius:4px;"></div>
           </div>
@@ -1192,11 +1192,8 @@
       openProjectModal(project = null) {
         const modal = document.getElementById('projectModal');
         const form = document.getElementById('projectForm');
-        const select = document.getElementById('customerSelect');
 
-        select.innerHTML = this.data.customers.map(c =>
-          `<option value="${c.id}">${c.name} (${c.type === 'enterprise' ? '企业' : '个人'})</option>`
-        ).join('');
+        this.currentSelectedCustomers = project ? [...(project.customerIds || [])] : [];
 
         if (project) {
           document.getElementById('modalTitle').textContent = '编辑项目';
@@ -1207,25 +1204,54 @@
           document.getElementById('interestRate').value = project.rate;
           document.getElementById('guaranteeType').value = project.guaranteeType;
           document.getElementById('remark').value = project.remark || '';
-          const selected = project.customerIds || [];
-          Array.from(select.options).forEach(opt => {
-            opt.selected = selected.includes(opt.value);
-          });
-          this.updateSelectedCustomers(selected);
+          this.renderCustomerList();
+          this.updateSelectedCustomers(this.currentSelectedCustomers);
         } else {
           document.getElementById('modalTitle').textContent = '新建项目';
           form.reset();
           document.getElementById('projectCode').value = this.generateProjectCode();
+          this.currentCustomerFilter = '';
+          this.renderCustomerList();
           this.updateSelectedCustomers([]);
         }
 
         modal.classList.add('active');
       },
 
-      onCustomerSelectChange() {
-        const select = document.getElementById('customerSelect');
-        const selected = Array.from(select.selectedOptions).map(opt => opt.value);
-        this.updateSelectedCustomers(selected);
+      currentCustomerFilter: '',
+      currentSelectedCustomers: [],
+
+      renderCustomerList() {
+        const container = document.getElementById('customerList');
+        const filter = (this.currentCustomerFilter || '').toLowerCase();
+        const filtered = this.data.customers.filter(c =>
+          c.name.toLowerCase().includes(filter) || (c.contact || '').toLowerCase().includes(filter)
+        );
+        container.innerHTML = filtered.map(c => `
+          <div style="display:flex;align-items:center;gap:8px;padding:6px;border-bottom:1px solid var(--border);cursor:pointer;" onclick="App.toggleCustomer('${c.id}')">
+            <input type="checkbox" ${this.currentSelectedCustomers.includes(c.id) ? 'checked' : ''} onclick="event.stopPropagation();App.toggleCustomer('${c.id}')">
+            <div>
+              <div style="font-weight:500;">${c.name}</div>
+              <div style="font-size:12px;color:var(--text-light);">${c.type === 'enterprise' ? '企业' : '个人'} · ${c.phone || ''}</div>
+            </div>
+          </div>
+        `).join('');
+      },
+
+      filterCustomers(value) {
+        this.currentCustomerFilter = value;
+        this.renderCustomerList();
+      },
+
+      toggleCustomer(customerId) {
+        const idx = this.currentSelectedCustomers.indexOf(customerId);
+        if (idx >= 0) {
+          this.currentSelectedCustomers.splice(idx, 1);
+        } else {
+          this.currentSelectedCustomers.push(customerId);
+        }
+        this.renderCustomerList();
+        this.updateSelectedCustomers(this.currentSelectedCustomers);
       },
 
       updateSelectedCustomers(selectedIds) {
@@ -1240,12 +1266,12 @@
       },
 
       removeCustomer(customerId) {
-        const select = document.getElementById('customerSelect');
-        Array.from(select.options).forEach(opt => {
-          if (opt.value === customerId) opt.selected = false;
-        });
-        const selected = Array.from(select.selectedOptions).map(opt => opt.value);
-        this.updateSelectedCustomers(selected);
+        const idx = this.currentSelectedCustomers.indexOf(customerId);
+        if (idx >= 0) {
+          this.currentSelectedCustomers.splice(idx, 1);
+          this.renderCustomerList();
+          this.updateSelectedCustomers(this.currentSelectedCustomers);
+        }
       },
 
       generateProjectCode() {
@@ -1263,8 +1289,7 @@
       saveProject() {
         const projectCode = document.getElementById('projectCode').value;
         const projectName = document.getElementById('projectName').value;
-        const select = document.getElementById('customerSelect');
-        const customerIds = Array.from(select.selectedOptions).map(opt => opt.value);
+        const customerIds = this.currentSelectedCustomers || [];
         const amount = parseFloat(document.getElementById('creditAmount').value);
         const term = parseInt(document.getElementById('creditTerm').value);
         const rate = document.getElementById('interestRate').value;
