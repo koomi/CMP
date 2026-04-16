@@ -1468,7 +1468,7 @@
                     <tr>
                       <td>${p.id}</td>
                       <td><span class="project-name" onclick="App.showProjectDetail('${p.id}')">${p.name}</span></td>
-                      <td>${(p.customerNames || []).join(', ')}</td>
+                      <td style="white-space:nowrap;">${(p.customerNames || []).map(n => `<div>${n}</div>`).join('')}</td>
                       <td class="amount">${this.formatAmount(p.amount)}</td>
                       <td><span class="stage-badge ${p.stage}">${this.getStageText(p.stage)}</span></td>
                       <td><span class="status-badge ${p.status}">${this.getStatusText(p.status)}</span></td>
@@ -1571,7 +1571,7 @@
                     <tr>
                       <td>${p.id}</td>
                       <td><span class="project-name" onclick="App.showProjectDetail('${p.id}')">${p.name}</span></td>
-                      <td>${(p.customerNames || []).join(', ')}</td>
+                      <td style="white-space:nowrap;">${(p.customerNames || []).map(n => `<div>${n}</div>`).join('')}</td>
                       <td>${this.getCustomerTypeText(p.customerType)}</td>
                       <td class="amount">${this.formatAmount(p.amount)}</td>
                       <td><span class="stage-badge ${p.stage}">${this.getStageText(p.stage)}</span></td>
