@@ -872,10 +872,16 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link" data-page="projects">
+          <a href="#" class="nav-link" data-page="projects" onclick="App.toggleSubMenu(event, 'projectSubMenu')">
             <span class="nav-icon">📁</span>
             <span>项目管理</span>
+            <span style="margin-left:auto;font-size:12px;" id="projectSubMenuIcon">▼</span>
           </a>
+          <ul class="sub-menu" id="projectSubMenu" style="display:none;list-style:none;padding-left:24px;">
+            <li><a href="#" class="nav-link" style="padding:8px 24px;font-size:13px;" data-page="projects" onclick="App.showStage('pre')">🔍 贷前调查</a></li>
+            <li><a href="#" class="nav-link" style="padding:8px 24px;font-size:13px;" data-page="projects" onclick="App.showStage('mid')">📋 贷中审批</a></li>
+            <li><a href="#" class="nav-link" style="padding:8px 24px;font-size:13px;" data-page="projects" onclick="App.showStage('post')">📊 贷后管理</a></li>
+          </ul>
         </li>
         <li class="nav-item">
           <a href="#" class="nav-link" data-page="tasks">
@@ -1274,6 +1280,27 @@
         };
       },
 
+      getStageStats() {
+        const stages = ['pre', 'mid', 'post'];
+        const stats = {};
+        stages.forEach(s => {
+          const projects = this.data.projects.filter(p => p.stage === s);
+          stats[s] = {
+            total: projects.length,
+            pending: projects.filter(p => p.status === 'pending').length,
+            processing: projects.filter(p => p.status === 'processing').length,
+            completed: projects.filter(p => p.status === 'completed').length,
+            rejected: projects.filter(p => p.status === 'rejected').length
+          };
+        });
+        return stats;
+      },
+
+      clearStageFilter() {
+        this.data.filterStage = '';
+        this.render();
+      },
+
       formatAmount(amount) {
         return new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY', minimumFractionDigits: 0 }).format(amount);
       },
@@ -1410,8 +1437,30 @@
 
       renderProjects() {
         const projects = this.getFilteredProjects();
+        const stageFilter = this.data.filterStage;
+        const stageStats = this.getStageStats();
+        const stageNames = { pre: '贷前调查', mid: '贷中审批', post: '贷后管理' };
 
         return `
+          ${stageFilter ? `
+          <div class="stats-grid fade-in" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
+            <div class="stat-card">
+              <div class="stat-icon primary">📁</div>
+              <div class="stat-value">${stageStats[stageFilter].total}</div>
+              <div class="stat-label">${stageNames[stageFilter]} - 项目数</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon warning">⏳</div>
+              <div class="stat-value">${stageStats[stageFilter].pending}</div>
+              <div class="stat-label">待处理</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon accent">✓</div>
+              <div class="stat-value">${stageStats[stageFilter].completed}</div>
+              <div class="stat-label">已完成</div>
+            </div>
+          </div>
+          ` : ''}
           <div class="filter-bar fade-in">
             <select class="filter-select" id="statusFilter" onchange="App.filterByStatus()">
               <option value="">全部状态</option>
@@ -1426,6 +1475,7 @@
               <option value="mid">贷中审批</option>
               <option value="post">贷后管理</option>
             </select>
+            ${stageFilter ? `<button class="btn btn-secondary" onclick="App.clearStageFilter()">清除筛选</button>` : ''}
           </div>
 
           <div class="section fade-in">
@@ -1931,6 +1981,27 @@
 
         const input = prompt('请输入密码：');
         return this.hashPassword(input || '') === password;
+      },
+
+      toggleSubMenu(event, menuId) {
+        event.preventDefault();
+        const menu = document.getElementById(menuId);
+        const icon = document.getElementById(menuId + 'Icon');
+        if (menu.style.display === 'none') {
+          menu.style.display = 'block';
+          if (icon) icon.textContent = '▲';
+        } else {
+          menu.style.display = 'none';
+          if (icon) icon.textContent = '▼';
+        }
+      },
+
+      showStage(stage) {
+        this.data.filterStage = stage;
+        this.data.currentPage = 'projects';
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.querySelector('[data-page="projects"]')?.classList.add('active');
+        this.render();
       },
 
       bindPageEvents() {}
