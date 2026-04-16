@@ -905,7 +905,7 @@
         <li class="nav-item">
           <a href="#" class="nav-link" data-page="deposits">
             <span class="nav-icon">💵</span>
-            <span>存款统计</span>
+            <span>存款管理</span>
           </a>
         </li>
         <li class="nav-item">
@@ -1940,7 +1940,10 @@ renderTasks() {
           </div>
 
           <div class="card fade-in">
-            <h3 style="margin-bottom: 16px; font-size: 16px;">客户存款明细</h3>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+              <h3 style="font-size:16px;">客户存款明细</h3>
+              <button class="btn btn-primary" onclick="App.openDepositModal()">+ 新增存款</button>
+            </div>
             <table class="projects-table">
               <thead>
                 <tr>
@@ -1950,6 +1953,7 @@ renderTasks() {
                   <th>存款金额</th>
                   <th>利率(%)</th>
                   <th>存款日期</th>
+                  <th>操作</th>
                 </tr>
               </thead>
               <tbody>
@@ -1961,6 +1965,10 @@ renderTasks() {
                     <td class="amount">${this.formatAmount(d.amount)}</td>
                     <td>${d.rate}%</td>
                     <td>${d.date}</td>
+                    <td>
+                      <button class="btn btn-secondary" style="padding:4px 8px;font-size:12px;" onclick="App.editDeposit('${d.id}')">编辑</button>
+                      <button class="btn btn-danger" style="padding:4px 8px;font-size:12px;margin-left:4px;" onclick="App.deleteDeposit('${d.id}')">删除</button>
+                    </td>
                   </tr>
                 `).join('')}
               </tbody>
@@ -2405,6 +2413,93 @@ renderTasks() {
         } else {
           el.style.display = 'none';
           if (icon) icon.textContent = '▶';
+        }
+      },
+
+      openDepositModal(deposit = null) {
+        const isEdit = deposit != null;
+        const content = document.getElementById('detailContent');
+        document.getElementById('detailModal').classList.add('active');
+        document.querySelector('#detailModal .modal-title').textContent = isEdit ? '编辑存款' : '新增存款';
+
+        const customerOptions = this.data.customers.map(c =>
+          `<option value="${c.id}" ${deposit && deposit.customerId === c.id ? 'selected' : ''}>${c.name}</option>`
+        ).join('');
+
+        document.getElementById('detailContent').innerHTML = `
+          <form style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+            <div class="form-group">
+              <label class="form-label">存款编号</label>
+              <input type="text" class="form-input" id="depositId" value="${deposit ? deposit.id : ''}" ${isEdit ? 'readonly' : ''}>
+            </div>
+            <div class="form-group">
+              <label class="form-label">客户 *</label>
+              <select class="form-select" id="depositCustomer" required>
+                ${customerOptions}
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">存款类型 *</label>
+              <select class="form-select" id="depositType" required>
+                <option value="定期" ${deposit && deposit.type === '定期' ? 'selected' : ''}>定期</option>
+                <option value="活期" ${deposit && deposit.type === '活期' ? 'selected' : ''}>活期</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">存款金额 *</label>
+              <input type="number" class="form-input" id="depositAmount" value="${deposit ? deposit.amount : ''}" required min="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">利率（%）</label>
+              <input type="number" class="form-input" id="depositRate" value="${deposit ? deposit.rate : ''}" step="0.01">
+            </div>
+            <div class="form-group">
+              <label class="form-label">存款日期</label>
+              <input type="date" class="form-input" id="depositDate" value="${deposit ? deposit.date : ''}">
+            </div>
+          </form>
+          <div style="margin-top:24px;display:flex;justify-content:flex-end;gap:12px;">
+            <button class="btn btn-secondary" onclick="App.closeModal('detailModal')">取消</button>
+            <button class="btn btn-primary" onclick="App.saveDeposit(${isEdit ? `'${deposit.id}'` : 'null'})">保存</button>
+          </div>
+        `;
+      },
+
+      editDeposit(id) {
+        const deposit = this.data.deposits.find(d => d.id === id);
+        if (deposit) this.openDepositModal(deposit);
+      },
+
+      saveDeposit(existingId) {
+        const id = existingId || `D${String(this.data.deposits.length + 1).padStart(3, '0')}`;
+        const customerId = document.getElementById('depositCustomer').value;
+        const customerName = this.data.customers.find(c => c.id === customerId)?.name || '';
+        const type = document.getElementById('depositType').value;
+        const amount = parseFloat(document.getElementById('depositAmount').value);
+        const rate = parseFloat(document.getElementById('depositRate').value) || 0;
+        const date = document.getElementById('depositDate').value || new Date().toISOString().split('T')[0];
+
+        if (!customerId || !amount) { alert('请填写必填字段'); return; }
+
+        const depositData = { id, customerId, customerName, type, amount, rate, date };
+        if (existingId) {
+          const idx = this.data.deposits.findIndex(d => d.id === existingId);
+          this.data.deposits[idx] = depositData;
+        } else {
+          this.data.deposits.push(depositData);
+        }
+
+        this.saveData();
+        this.closeModal('detailModal');
+        this.render();
+        alert('保存成功');
+      },
+
+      deleteDeposit(id) {
+        if (confirm('确定要删除这条存款记录吗？')) {
+          this.data.deposits = this.data.deposits.filter(d => d.id !== id);
+          this.saveData();
+          this.render();
         }
       },
 
