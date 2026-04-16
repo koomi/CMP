@@ -1131,6 +1131,7 @@
             stageProgress: { pre: 0, mid: 0, post: 0 },
             remark: '',
             createdAt: new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000).toISOString(),
+            endDate: status === 'completed' ? new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString() : null,
             tasks: this.generateTasks(status, stage)
           });
 
@@ -1346,6 +1347,7 @@
           stageProgress: existingIndex >= 0 ? this.data.projects[existingIndex].stageProgress : { pre: 0, mid: 0, post: 0 },
           remark: remark,
           createdAt: existingIndex >= 0 ? this.data.projects[existingIndex].createdAt : new Date().toISOString(),
+          endDate: existingIndex >= 0 ? this.data.projects[existingIndex].endDate : null,
           tasks: existingIndex >= 0 ? this.data.projects[existingIndex].tasks : this.generateTasks('pending', 'pre')
         };
 
@@ -1613,11 +1615,12 @@
                     <th>项目编号</th>
                     <th>项目名称</th>
                     <th>客户名称</th>
-                    <th>客户类型</th>
                     <th>授信金额</th>
                     <th>当前阶段</th>
                     <th>状态</th>
-                    <th>创建时间</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    <th>项目耗时</th>
                     <th>操作</th>
                   </tr>
                 </thead>
@@ -1627,11 +1630,12 @@
                       <td>${p.id}</td>
                       <td><span class="project-name" onclick="App.showProjectDetail('${p.id}')">${p.name}</span></td>
                       <td style="white-space:nowrap;">${(p.customerNames || []).map(n => `<div>${n}</div>`).join('')}</td>
-                      <td>${this.getCustomerTypeText(p.customerType)}</td>
                       <td class="amount">${this.formatAmount(p.amount)}</td>
                       <td><span class="stage-badge ${p.stage}">${this.getStageText(p.stage)}</span></td>
                       <td><span class="status-badge ${p.status}">${this.getStatusText(p.status)}</span></td>
                       <td>${this.formatDate(p.createdAt)}</td>
+                      <td>${p.endDate ? this.formatDate(p.endDate) : (p.status === 'completed' ? this.formatDate(new Date().toISOString()) : '-')}</td>
+                      <td>${this.renderDurationBar(p)}</td>
                       <td>
                         <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="App.editProject('${p.id}')">编辑</button>
                       </td>
@@ -2402,6 +2406,26 @@ renderTasks() {
           el.style.display = 'none';
           if (icon) icon.textContent = '▶';
         }
+      },
+
+      renderDurationBar(project) {
+        const start = new Date(project.createdAt).getTime();
+        const end = project.status === 'completed' && project.endDate ? new Date(project.endDate).getTime() : Date.now();
+        const days = Math.floor((end - start) / (1000 * 60 * 60 * 24));
+        const maxDays = 90;
+        const percent = Math.min((days / maxDays) * 100, 100);
+        const r = Math.min(255, Math.floor((percent / 100) * 255));
+        const g = Math.min(255, Math.floor((1 - percent / 100) * 200 + 50));
+        const color = `rgb(${r}, ${g}, 80)`;
+        const color2 = project.status === 'completed' ? '#38a169' : color;
+        return `
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="flex:1;height:16px;background:var(--border);border-radius:8px;overflow:hidden;max-width:80px;">
+              <div style="width:${percent}%;height:100%;background:${color2};border-radius:8px;transition:width 0.3s;"></div>
+            </div>
+            <span style="font-size:12px;white-space:nowrap;">${days}天</span>
+          </div>
+        `;
       },
 
       bindPageEvents() {}
