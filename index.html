@@ -1624,68 +1624,50 @@
         `;
       },
 
-      renderTasks() {
-        const allTasks = [];
-        this.data.projects.forEach(p => {
-          p.tasks.forEach(t => {
-            allTasks.push({ ...t, projectName: p.name, projectId: p.id, stage: p.stage });
-          });
-        });
-
-        const pendingTasks = allTasks.filter(t => !t.completed);
+renderTasks() {
+        const projectsWithTasks = this.data.projects.map(p => ({
+          ...p,
+          pendingTasks: p.tasks.filter(t => !t.completed),
+          completedTasks: p.tasks.filter(t => t.completed)
+        })).filter(p => p.tasks.length > 0);
 
         return `
-          <div class="section fade-in">
-            <div class="section-header">
-              <h3 class="section-title">待办任务列表</h3>
-              <span style="color: var(--text-light);">共 ${pendingTasks.length} 项</span>
-            </div>
-            <div class="section-body">
-              ${pendingTasks.length > 0 ? `
-                <ul class="task-list">
-                  ${pendingTasks.map(t => `
+          <div class="fade-in">
+            ${projectsWithTasks.length > 0 ? projectsWithTasks.map(p => `
+              <div class="card" style="margin-bottom: 16px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);">
+                  <div>
+                    <h3 style="font-size:16px;color:var(--primary);cursor:pointer;" onclick="App.showProjectDetail('${p.id}')">${p.name}</h3>
+                    <div style="font-size:12px;color:var(--text-light);">${(p.customerNames || []).join(', ')}</div>
+                  </div>
+                  <div style="text-align:right;">
+                    <span class="stage-badge ${p.stage}">${this.getStageText(p.stage)}</span>
+                    <div style="font-size:12px;color:var(--text-light);margin-top:4px;">
+                      待办: ${p.pendingTasks.length} | 已完成: ${p.completedTasks.length}
+                    </div>
+                  </div>
+                </div>
+                <ul class="task-list" style="margin-left:0;">
+                  ${p.tasks.map(t => `
                     <li class="task-item">
-                      <div class="task-checkbox" onclick="App.toggleTask('${t.id}', '${t.projectId}')"></div>
+                      <div class="task-checkbox ${t.completed ? 'checked' : ''}" onclick="App.toggleTask('${t.id}', '${p.id}')">
+                        ${t.completed ? '✓' : ''}
+                      </div>
                       <div class="task-content">
-                        <div class="task-title">${t.title}</div>
-                        <div class="task-meta">项目: ${t.projectName} · ${this.getStageText(t.stage)}</div>
+                        <div class="task-title ${t.completed ? 'checked' : ''}">${t.title}</div>
                       </div>
                     </li>
                   `).join('')}
                 </ul>
-              ` : `
+              </div>
+            `).join('') : `
+              <div class="card">
                 <div class="empty-state">
                   <div class="empty-icon">✅</div>
-                  <p>恭喜！所有任务已完成</p>
+                  <p>暂无项目任务</p>
                 </div>
-              `}
-            </div>
-          </div>
-
-          <div class="section fade-in">
-            <div class="section-header">
-              <h3 class="section-title">已完成任务</h3>
-            </div>
-            <div class="section-body">
-              ${allTasks.filter(t => t.completed).length > 0 ? `
-                <ul class="task-list">
-                  ${allTasks.filter(t => t.completed).map(t => `
-                    <li class="task-item">
-                      <div class="task-checkbox checked" onclick="App.toggleTask('${t.id}', '${t.projectId}')">✓</div>
-                      <div class="task-content">
-                        <div class="task-title checked">${t.title}</div>
-                        <div class="task-meta">项目: ${t.projectName} · ${this.getStageText(t.stage)}</div>
-                      </div>
-                    </li>
-                  `).join('')}
-                </ul>
-              ` : `
-                <div class="empty-state">
-                  <div class="empty-icon">📋</div>
-                  <p>暂无数已完成任务</p>
-                </div>
-              `}
-            </div>
+              </div>
+            `}
           </div>
         `;
       },
