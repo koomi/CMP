@@ -1282,6 +1282,19 @@
         this.renderCustomerList();
       },
 
+      depositCustomerFilter: '',
+
+      filterDepositCustomer(value) {
+        this.depositCustomerFilter = value;
+        const select = document.getElementById('depositCustomer');
+        if (select) {
+          const f = value.toLowerCase();
+          select.innerHTML = this.data.customers.filter(c => !f || c.name.toLowerCase().includes(f)).map(c =>
+            `<option value="${c.id}">${c.name}</option>`
+          ).join('');
+        }
+      },
+
       toggleCustomer(customerId) {
         const idx = this.currentSelectedCustomers.indexOf(customerId);
         if (idx >= 0) {
@@ -2434,9 +2447,12 @@ renderTasks() {
         document.getElementById('detailModal').classList.add('active');
         document.querySelector('#detailModal .modal-title').textContent = isEdit ? '编辑存款' : '新增存款';
 
-        const customerOptions = this.data.customers.map(c =>
-          `<option value="${c.id}" ${deposit && deposit.customerId === c.id ? 'selected' : ''}>${c.name}</option>`
-        ).join('');
+        const renderDepositCustomerOptions = (filter = '') => {
+          const f = filter.toLowerCase();
+          return this.data.customers.filter(c => !f || c.name.toLowerCase().includes(f)).map(c =>
+            `<option value="${c.id}" ${deposit && deposit.customerId === c.id ? 'selected' : ''}>${c.name}</option>`
+          ).join('');
+        };
 
         document.getElementById('detailContent').innerHTML = `
           <form style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
@@ -2446,8 +2462,9 @@ renderTasks() {
             </div>
             <div class="form-group">
               <label class="form-label">客户 *</label>
-              <select class="form-select" id="depositCustomer" required>
-                ${customerOptions}
+              <input type="text" class="form-input" placeholder="搜索客户..." id="depositCustomerSearch" oninput="App.filterDepositCustomer(this.value)" style="margin-bottom:8px;">
+              <select class="form-select" id="depositCustomer" required size="4">
+                ${renderDepositCustomerOptions()}
               </select>
             </div>
             <div class="form-group">
