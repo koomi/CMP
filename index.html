@@ -1695,6 +1695,35 @@
         const stageCounts = { pre: 0, mid: 0, post: 0 };
         this.data.projects.forEach(p => stageCounts[p.stage]++);
 
+        const total = stats.total || 1;
+        const statusColors = { pending: '#dd6b20', processing: '#1a365d', completed: '#38a169', rejected: '#e53e3e' };
+        const stageColors = { pre: '#2b6cb0', mid: '#b7791f', post: '#276749' };
+
+        const getStatusDeg = () => {
+          let deg = 0;
+          const arr = [];
+          const statuses = ['pending', 'processing', 'completed', 'rejected'];
+          const counts = [stats.pending, stats.processing, stats.completed, stats.rejected];
+          counts.forEach((c, i) => {
+            const pct = (c / total) * 360;
+            arr.push({ status: statuses[i], deg: pct, start: deg, color: statusColors[statuses[i]], count: c });
+            deg += pct;
+          });
+          return arr;
+        };
+
+        const getStageDeg = () => {
+          let deg = 0;
+          const arr = [];
+          const stages = ['pre', 'mid', 'post'];
+          stages.forEach(s => {
+            const pct = ((stageCounts[s] || 0) / total) * 360;
+            arr.push({ stage: s, deg: pct, start: deg, color: stageColors[s], count: stageCounts[s] });
+            deg += pct;
+          });
+          return arr;
+        };
+
         return `
           <div class="stats-grid fade-in">
             <div class="stat-card">
@@ -1720,39 +1749,53 @@
           </div>
 
           <div class="detail-grid fade-in">
-            <div class="card">
-              <h3 style="margin-bottom: 16px; font-size: 16px;">项目状态分布</h3>
-              <div class="detail-item">
-                <span class="detail-label">待处理</span>
-                <span class="detail-value">${stats.pending}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">审批中</span>
-                <span class="detail-value">${stats.processing}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">已完成</span>
-                <span class="detail-value">${stats.completed}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">已拒绝</span>
-                <span class="detail-value">${stats.rejected}</span>
+            <div class="card" style="text-align:center;">
+              <h3 style="margin-bottom: 16px; font-size: 16px;">项目状态分布（点击进入筛选）</h3>
+              <div style="display:flex;justify-content:center;align-items:center;gap:32px;flex-wrap:wrap;">
+                ${(() => {
+                  const arr = getStatusDeg();
+                  let conic = '';
+                  let start = 0;
+                  arr.forEach(item => {
+                    const end = start + item.deg;
+                    conic += `${item.color} ${start}deg ${end}deg`;
+                    if (item.deg < 360) conic += ', ';
+                    start = end;
+                  });
+                  return `
+                    <div style="position:relative;">
+                      <div style="width:150px;height:150px;border-radius:50%;background:conic-gradient(${conic});cursor:pointer;" onclick="App.filterByStatus()"></div>
+                    </div>
+                    <div style="text-align:left;">
+                      ${arr.map(s => `<div style="display:flex;align-items:center;gap:8px;margin:8px 0;cursor:pointer;" onclick="App.filterProjectByStatus('${s.status}')"><span style="width:12px;height:12px;background:${s.color};border-radius:2px;"></span><span>${App.getStatusText(s.status)}: ${s.count}</span></div>`).join('')}
+                    </div>
+                  `;
+                })()}
               </div>
             </div>
 
-            <div class="card">
-              <h3 style="margin-bottom: 16px; font-size: 16px;">项目阶段分布</h3>
-              <div class="detail-item">
-                <span class="detail-label">贷前调查</span>
-                <span class="detail-value">${stageCounts.pre}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">贷中审批</span>
-                <span class="detail-value">${stageCounts.mid}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">贷后管理</span>
-                <span class="detail-value">${stageCounts.post}</span>
+            <div class="card" style="text-align:center;">
+              <h3 style="margin-bottom: 16px; font-size: 16px;">项目阶段分布（点击进入筛选）</h3>
+              <div style="display:flex;justify-content:center;align-items:center;gap:32px;flex-wrap:wrap;">
+                ${(() => {
+                  const arr = getStageDeg();
+                  let conic = '';
+                  let start = 0;
+                  arr.forEach(item => {
+                    const end = start + item.deg;
+                    conic += `${item.color} ${start}deg ${end}deg`;
+                    if (item.deg < 360) conic += ', ';
+                    start = end;
+                  });
+                  return `
+                    <div style="position:relative;">
+                      <div style="width:150px;height:150px;border-radius:50%;background:conic-gradient(${conic});cursor:pointer;" onclick="App.filterByStage()"></div>
+                    </div>
+                    <div style="text-align:left;">
+                      ${arr.map(s => `<div style="display:flex;align-items:center;gap:8px;margin:8px 0;cursor:pointer;" onclick="App.filterProjectByStage('${s.stage}')"><span style="width:12px;height:12px;background:${s.color};border-radius:2px;"></span><span>${App.getStageText(s.stage)}: ${s.count}</span></div>`).join('')}
+                    </div>
+                  `;
+                })()}
               </div>
             </div>
           </div>
@@ -2273,6 +2316,26 @@
           el.style.display = 'none';
           if (icon) icon.textContent = '▼';
         }
+      },
+
+      filterByStatus(status) {
+        this.data.filterStatus = status || '';
+        this.data.currentPage = 'projects';
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.querySelector('[data-page="projects"]')?.classList.add('active');
+        this.render();
+      },
+
+      filterProjectByStatus(status) {
+        this.filterByStatus(status);
+      },
+
+      filterProjectByStage(stage) {
+        this.data.filterStage = stage || '';
+        this.data.currentPage = 'projects';
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.querySelector('[data-page="projects"]')?.classList.add('active');
+        this.render();
       },
 
       bindPageEvents() {}
