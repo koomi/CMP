@@ -878,6 +878,7 @@
             <span style="margin-left:auto;font-size:12px;" id="projectSubMenuIcon">▼</span>
           </a>
           <ul class="sub-menu" id="projectSubMenu" style="display:none;list-style:none;padding-left:24px;">
+            <li><a href="#" class="nav-link" style="padding:8px 24px;font-size:13px;" data-page="projects" onclick="App.showAllProjects()">📋 全部项目</a></li>
             <li><a href="#" class="nav-link" style="padding:8px 24px;font-size:13px;" data-page="projects" onclick="App.showStage('pre')">🔍 贷前调查</a></li>
             <li><a href="#" class="nav-link" style="padding:8px 24px;font-size:13px;" data-page="projects" onclick="App.showStage('mid')">📋 贷中审批</a></li>
             <li><a href="#" class="nav-link" style="padding:8px 24px;font-size:13px;" data-page="projects" onclick="App.showStage('post')">📊 贷后管理</a></li>
@@ -2173,6 +2174,14 @@
 
       showStage(stage) {
         this.data.filterStage = stage;
+        this.data.currentPage = 'projects';
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.querySelector('[data-page="projects"]')?.classList.add('active');
+        this.render();
+      },
+
+      showAllProjects() {
+        this.data.filterStage = '';
         this.data.currentPage = 'projects';
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         document.querySelector('[data-page="projects"]')?.classList.add('active');
