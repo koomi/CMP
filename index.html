@@ -903,6 +903,12 @@
           </a>
         </li>
         <li class="nav-item">
+          <a href="#" class="nav-link" data-page="deposits">
+            <span class="nav-icon">💵</span>
+            <span>存款统计</span>
+          </a>
+        </li>
+        <li class="nav-item">
           <a href="#" class="nav-link" data-page="settings">
             <span class="nav-icon">⚙️</span>
             <span>系统设置</span>
@@ -1028,6 +1034,7 @@
       data: {
         projects: [],
         customers: [],
+        deposits: [],
         currentPage: 'dashboard',
         searchQuery: '',
         filterStatus: '',
@@ -1059,11 +1066,19 @@
           this.data.customers = this.generateSampleCustomers();
           this.saveData();
         }
+        const depStored = localStorage.getItem('creditDeposits');
+        if (depStored) {
+          this.data.deposits = JSON.parse(depStored);
+        } else {
+          this.data.deposits = this.generateSampleDeposits();
+          this.saveData();
+        }
       },
 
       saveData() {
         localStorage.setItem('creditProjects', JSON.stringify(this.data.projects));
         localStorage.setItem('creditCustomers', JSON.stringify(this.data.customers));
+        localStorage.setItem('creditDeposits', JSON.stringify(this.data.deposits));
       },
 
       generateSampleCustomers() {
@@ -1075,6 +1090,19 @@
           { id: 'C005', name: '杭州电子商务', type: 'enterprise', contact: '陈总', phone: '13800138004', address: '杭州市滨江区' },
           { id: 'C006', name: '张三', type: 'personal', phone: '13900139000' },
           { id: 'C007', name: '李四', type: 'personal', phone: '13900139001' }
+        ];
+      },
+
+      generateSampleDeposits() {
+        return [
+          { id: 'D001', customerId: 'C001', customerName: '北京创新科技有限公司', amount: 5000000, type: '定期', date: '2025-01-15', rate: 2.1 },
+          { id: 'D002', customerId: 'C002', customerName: '上海国际贸易集团', amount: 8000000, type: '活期', date: '2025-02-20', rate: 0.35 },
+          { id: 'D003', customerId: 'C003', customerName: '深圳智能制造企业', amount: 3000000, type: '定期', date: '2025-03-10', rate: 2.25 },
+          { id: 'D004', customerId: 'C004', customerName: '广州物流运输公司', amount: 2000000, type: '活期', date: '2025-03-25', rate: 0.35 },
+          { id: 'D005', customerId: 'C005', customerName: '杭州电子商务', amount: 6000000, type: '定期', date: '2025-04-05', rate: 2.15 },
+          { id: 'D006', customerId: 'C001', customerName: '北京创新科技有限公司', amount: 1500000, type: '活期', date: '2025-04-18', rate: 0.35 },
+          { id: 'D007', customerId: 'C006', customerName: '张三', amount: 500000, type: '定期', date: '2025-05-01', rate: 2.3 },
+          { id: 'D008', customerId: 'C007', customerName: '李四', amount: 300000, type: '活期', date: '2025-05-10', rate: 0.35 }
         ];
       },
 
@@ -1435,6 +1463,7 @@
           customers: () => this.renderCustomers(),
           tasks: () => this.renderTasks(),
           statistics: () => this.renderStatistics(),
+          deposits: () => this.renderDeposits(),
           settings: () => this.renderSettings()
         };
 
@@ -1633,12 +1662,15 @@ renderTasks() {
 
         return `
           <div class="fade-in">
-            ${projectsWithTasks.length > 0 ? projectsWithTasks.map(p => `
+            ${projectsWithTasks.length > 0 ? projectsWithTasks.map((p, idx) => `
               <div class="card" style="margin-bottom: 16px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);">
-                  <div>
-                    <h3 style="font-size:16px;color:var(--primary);cursor:pointer;" onclick="App.showProjectDetail('${p.id}')">${p.name}</h3>
-                    <div style="font-size:12px;color:var(--text-light);">${(p.customerNames || []).join(', ')}</div>
+                <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding-bottom:12px;border-bottom:1px solid var(--border);" onclick="App.toggleTaskSection('taskSection${idx}')">
+                  <div style="display:flex;align-items:center;gap:12px;">
+                    <span id="taskIcon${idx}" style="font-size:12px;">▼</span>
+                    <div>
+                      <h3 style="font-size:16px;color:var(--primary);cursor:pointer;" onclick="event.stopPropagation();App.showProjectDetail('${p.id}')">${p.name}</h3>
+                      <div style="font-size:12px;color:var(--text-light);">${(p.customerNames || []).join(', ')}</div>
+                    </div>
                   </div>
                   <div style="text-align:right;">
                     <span class="stage-badge ${p.stage}">${this.getStageText(p.stage)}</span>
@@ -1647,18 +1679,20 @@ renderTasks() {
                     </div>
                   </div>
                 </div>
-                <ul class="task-list" style="margin-left:0;">
-                  ${p.tasks.map(t => `
-                    <li class="task-item">
-                      <div class="task-checkbox ${t.completed ? 'checked' : ''}" onclick="App.toggleTask('${t.id}', '${p.id}')">
-                        ${t.completed ? '✓' : ''}
-                      </div>
-                      <div class="task-content">
-                        <div class="task-title ${t.completed ? 'checked' : ''}">${t.title}</div>
-                      </div>
-                    </li>
-                  `).join('')}
-                </ul>
+                <div id="taskSection${idx}">
+                  <ul class="task-list" style="margin-left:0;margin-top:16px;">
+                    ${p.tasks.map(t => `
+                      <li class="task-item">
+                        <div class="task-checkbox ${t.completed ? 'checked' : ''}" onclick="App.toggleTask('${t.id}', '${p.id}')">
+                          ${t.completed ? '✓' : ''}
+                        </div>
+                        <div class="task-content">
+                          <div class="task-title ${t.completed ? 'checked' : ''}">${t.title}</div>
+                        </div>
+                      </li>
+                    `).join('')}
+                  </ul>
+                </div>
               </div>
             `).join('') : `
               <div class="card">
@@ -1868,6 +1902,67 @@ renderTasks() {
         this.closeModal('detailModal');
         this.render();
         alert('保存成功');
+      },
+
+      renderDeposits() {
+        const deposits = this.data.deposits;
+        const totalDeposits = deposits.reduce((sum, d) => sum + d.amount, 0);
+        const fixedDeposits = deposits.filter(d => d.type === '定期').reduce((sum, d) => sum + d.amount, 0);
+        const currentDeposits = deposits.filter(d => d.type === '活期').reduce((sum, d) => sum + d.amount, 0);
+        const customerCount = new Set(deposits.map(d => d.customerId)).size;
+
+        return `
+          <div class="stats-grid fade-in">
+            <div class="stat-card">
+              <div class="stat-icon primary">💵</div>
+              <div class="stat-value">${this.formatAmount(totalDeposits)}</div>
+              <div class="stat-label">存款总额</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon accent">🏦</div>
+              <div class="stat-value">${this.formatAmount(fixedDeposits)}</div>
+              <div class="stat-label">定期存款</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon warning">📊</div>
+              <div class="stat-value">${this.formatAmount(currentDeposits)}</div>
+              <div class="stat-label">活期存款</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon danger">👥</div>
+              <div class="stat-value">${customerCount}</div>
+              <div class="stat-label">存款客户数</div>
+            </div>
+          </div>
+
+          <div class="card fade-in">
+            <h3 style="margin-bottom: 16px; font-size: 16px;">客户存款明细</h3>
+            <table class="projects-table">
+              <thead>
+                <tr>
+                  <th>存款编号</th>
+                  <th>客户名称</th>
+                  <th>存款类型</th>
+                  <th>存款金额</th>
+                  <th>利率(%)</th>
+                  <th>存款日期</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${deposits.map(d => `
+                  <tr>
+                    <td>${d.id}</td>
+                    <td>${d.customerName}</td>
+                    <td>${d.type === '定期' ? '<span class="stage-badge post">定期</span>' : '<span class="stage-badge mid">活期</span>'}</td>
+                    <td class="amount">${this.formatAmount(d.amount)}</td>
+                    <td>${d.rate}%</td>
+                    <td>${d.date}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
       },
 
       renderSettings() {
@@ -2295,6 +2390,18 @@ renderTasks() {
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         document.querySelector('[data-page="projects"]')?.classList.add('active');
         this.render();
+      },
+
+      toggleTaskSection(sectionId) {
+        const el = document.getElementById(sectionId);
+        const icon = document.getElementById('taskIcon' + sectionId.replace('taskSection', ''));
+        if (el.style.display === 'none') {
+          el.style.display = 'block';
+          if (icon) icon.textContent = '▼';
+        } else {
+          el.style.display = 'none';
+          if (icon) icon.textContent = '▶';
+        }
       },
 
       bindPageEvents() {}
