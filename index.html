@@ -1870,54 +1870,69 @@
       renderSettings() {
         return `
           <div class="card fade-in">
-            <h3 style="margin-bottom: 24px; font-size: 16px;">密码管理</h3>
-            <div class="form-group">
-              <label class="form-label">当前密码</label>
-              <input type="password" class="form-input" id="currentPassword" placeholder="请输入当前密码">
+            <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:24px;" onclick="App.toggleSection('pwSection')">
+              <h3 style="font-size:16px;">🔐 密码管理</h3>
+              <span id="pwSectionIcon" style="font-size:12px;">▼</span>
             </div>
-            <div class="form-group">
-              <label class="form-label">新密码</label>
-              <input type="password" class="form-input" id="newPassword" placeholder="请输入新密码（至少6位）">
+            <div id="pwSection">
+              <div class="form-group">
+                <label class="form-label">当前密码</label>
+                <input type="password" class="form-input" id="currentPassword" placeholder="请输入当前密码">
+              </div>
+              <div class="form-group">
+                <label class="form-label">新密码</label>
+                <input type="password" class="form-input" id="newPassword" placeholder="请输入新密码（至少6位）">
+              </div>
+              <div class="form-group">
+                <label class="form-label">确认新密码</label>
+                <input type="password" class="form-input" id="confirmPassword" placeholder="请再次输入新密码">
+              </div>
+              <button class="btn btn-primary" onclick="App.changePassword()">修改密码</button>
             </div>
-            <div class="form-group">
-              <label class="form-label">确认新密码</label>
-              <input type="password" class="form-input" id="confirmPassword" placeholder="请再次输入新密码">
-            </div>
-            <button class="btn btn-primary" onclick="App.changePassword()">修改密码</button>
           </div>
 
           <div class="card fade-in" style="margin-top: 24px;">
-            <h3 style="margin-bottom: 24px; font-size: 16px;">系统设置</h3>
-            <div class="form-group">
-              <label class="form-label">默认利率（%）</label>
-              <input type="number" class="form-input" value="4.35" step="0.01">
+            <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:24px;" onclick="App.toggleSection('sysSection')">
+              <h3 style="font-size:16px;">⚙️ 系统设置</h3>
+              <span id="sysSectionIcon" style="font-size:12px;">▼</span>
             </div>
-            <div class="form-group">
-              <label class="form-label">默认授信期限</label>
-              <select class="form-select">
-                <option value="6">6个月</option>
-                <option value="12" selected>12个月</option>
-                <option value="24">24个月</option>
-              </select>
+            <div id="sysSection">
+              <div class="form-group">
+                <label class="form-label">默认利率（%）</label>
+                <input type="number" class="form-input" value="4.35" step="0.01">
+              </div>
+              <div class="form-group">
+                <label class="form-label">默认授信期限</label>
+                <select class="form-select">
+                  <option value="6">6个月</option>
+                  <option value="12" selected>12个月</option>
+                  <option value="24">24个月</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">默认担保方式</label>
+                <select class="form-select">
+                  <option value="credit" selected>信用贷款</option>
+                  <option value="mortgage">抵押贷款</option>
+                  <option value="pledge">质押贷款</option>
+                  <option value="guarantee">担保贷款</option>
+                </select>
+              </div>
+              <button class="btn btn-primary">保存设置</button>
             </div>
-            <div class="form-group">
-              <label class="form-label">默认担保方式</label>
-              <select class="form-select">
-                <option value="credit" selected>信用贷款</option>
-                <option value="mortgage">抵押贷款</option>
-                <option value="pledge">质押贷款</option>
-                <option value="guarantee">担保贷款</option>
-              </select>
-            </div>
-            <button class="btn btn-primary">保存设置</button>
           </div>
 
           <div class="card fade-in" style="margin-top: 24px;">
-            <h3 style="margin-bottom: 24px; font-size: 16px;">数据管理</h3>
-            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-              <button class="btn btn-secondary" onclick="App.exportData()">导出数据</button>
-              <button class="btn btn-secondary" onclick="App.importData()">导入数据</button>
-              <button class="btn btn-danger" onclick="App.clearData()">清空数据</button>
+            <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:24px;" onclick="App.toggleSection('dataSection')">
+              <h3 style="font-size:16px;">💾 数据管理</h3>
+              <span id="dataSectionIcon" style="font-size:12px;">▼</span>
+            </div>
+            <div id="dataSection">
+              <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <button class="btn btn-secondary" onclick="App.exportData()">导出数据</button>
+                <button class="btn btn-secondary" onclick="App.importData()">导入数据</button>
+                <button class="btn btn-danger" onclick="App.clearData()">清空数据</button>
+              </div>
             </div>
           </div>
         `;
@@ -2212,6 +2227,18 @@
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         document.querySelector('[data-page="projects"]')?.classList.add('active');
         this.render();
+      },
+
+      toggleSection(sectionId) {
+        const el = document.getElementById(sectionId);
+        const icon = document.getElementById(sectionId + 'Icon');
+        if (el.style.display === 'none') {
+          el.style.display = 'block';
+          if (icon) icon.textContent = '▲';
+        } else {
+          el.style.display = 'none';
+          if (icon) icon.textContent = '▼';
+        }
       },
 
       bindPageEvents() {}
