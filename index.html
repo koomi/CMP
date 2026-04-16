@@ -1678,33 +1678,36 @@ renderTasks() {
         this.data.projects.forEach(p => stageCounts[p.stage]++);
 
         const total = stats.total || 1;
-        const statusColors = { pending: '#dd6b20', processing: '#1a365d', completed: '#38a169', rejected: '#e53e3e' };
-        const stageColors = { pre: '#2b6cb0', mid: '#b7791f', post: '#276749' };
 
-        const getStatusDeg = () => {
-          let deg = 0;
-          const arr = [];
-          const statuses = ['pending', 'processing', 'completed', 'rejected'];
-          const counts = [stats.pending, stats.processing, stats.completed, stats.rejected];
-          counts.forEach((c, i) => {
-            const pct = (c / total) * 360;
-            arr.push({ status: statuses[i], deg: pct, start: deg, color: statusColors[statuses[i]], count: c });
-            deg += pct;
+        const statusData = [
+          { key: 'pending', label: '待处理', count: stats.pending, color: '#dd6b20' },
+          { key: 'processing', label: '审批中', count: stats.processing, color: '#1a365d' },
+          { key: 'completed', label: '已完成', count: stats.completed, color: '#38a169' },
+          { key: 'rejected', label: '已拒绝', count: stats.rejected, color: '#e53e3e' }
+        ];
+
+        const stageData = [
+          { key: 'pre', label: '贷前调查', count: stageCounts.pre, color: '#2b6cb0' },
+          { key: 'mid', label: '贷中审批', count: stageCounts.mid, color: '#b7791f' },
+          { key: 'post', label: '贷后管理', count: stageCounts.post, color: '#276749' }
+        ];
+
+        const buildPie = (data) => {
+          let gradient = '';
+          let current = 0;
+          data.forEach((item, i) => {
+            if (item.count > 0) {
+              const start = current;
+              current += (item.count / total) * 360;
+              const end = current;
+              gradient += (gradient ? ', ' : '') + item.color + ' ' + start + 'deg ' + end + 'deg';
+            }
           });
-          return arr;
+          return gradient || '#e2e8f0 0deg 360deg';
         };
 
-        const getStageDeg = () => {
-          let deg = 0;
-          const arr = [];
-          const stages = ['pre', 'mid', 'post'];
-          stages.forEach(s => {
-            const pct = ((stageCounts[s] || 0) / total) * 360;
-            arr.push({ stage: s, deg: pct, start: deg, color: stageColors[s], count: stageCounts[s] });
-            deg += pct;
-          });
-          return arr;
-        };
+        const statusGradient = buildPie(statusData);
+        const stageGradient = buildPie(stageData);
 
         return `
           <div class="stats-grid fade-in">
@@ -1734,50 +1737,24 @@ renderTasks() {
             <div class="card" style="text-align:center;">
               <h3 style="margin-bottom: 16px; font-size: 16px;">项目状态分布（点击进入筛选）</h3>
               <div style="display:flex;justify-content:center;align-items:center;gap:32px;flex-wrap:wrap;">
-                ${(() => {
-                  const arr = getStatusDeg();
-                  let conic = '';
-                  let start = 0;
-                  arr.forEach(item => {
-                    const end = start + item.deg;
-                    conic += `${item.color} ${start}deg ${end}deg`;
-                    if (item.deg < 360) conic += ', ';
-                    start = end;
-                  });
-                  return `
-                    <div style="position:relative;">
-                      <div style="width:150px;height:150px;border-radius:50%;background:conic-gradient(${conic});cursor:pointer;" onclick="App.filterByStatus()"></div>
-                    </div>
-                    <div style="text-align:left;">
-                      ${arr.map(s => `<div style="display:flex;align-items:center;gap:8px;margin:8px 0;cursor:pointer;" onclick="App.filterProjectByStatus('${s.status}')"><span style="width:12px;height:12px;background:${s.color};border-radius:2px;"></span><span>${App.getStatusText(s.status)}: ${s.count}</span></div>`).join('')}
-                    </div>
-                  `;
-                })()}
+                <div style="position:relative;">
+                  <div style="width:150px;height:150px;border-radius:50%;background:conic-gradient(${statusGradient});cursor:pointer;" onclick="App.filterByStatus()"></div>
+                </div>
+                <div style="text-align:left;">
+                  ${statusData.map(s => `<div style="display:flex;align-items:center;gap:8px;margin:8px 0;cursor:pointer;" onclick="App.filterProjectByStatus('${s.key}')"><span style="width:12px;height:12px;background:${s.color};border-radius:2px;"></span><span>${s.label}: ${s.count}</span></div>`).join('')}
+                </div>
               </div>
             </div>
 
             <div class="card" style="text-align:center;">
               <h3 style="margin-bottom: 16px; font-size: 16px;">项目阶段分布（点击进入筛选）</h3>
               <div style="display:flex;justify-content:center;align-items:center;gap:32px;flex-wrap:wrap;">
-                ${(() => {
-                  const arr = getStageDeg();
-                  let conic = '';
-                  let start = 0;
-                  arr.forEach(item => {
-                    const end = start + item.deg;
-                    conic += `${item.color} ${start}deg ${end}deg`;
-                    if (item.deg < 360) conic += ', ';
-                    start = end;
-                  });
-                  return `
-                    <div style="position:relative;">
-                      <div style="width:150px;height:150px;border-radius:50%;background:conic-gradient(${conic});cursor:pointer;" onclick="App.filterByStage()"></div>
-                    </div>
-                    <div style="text-align:left;">
-                      ${arr.map(s => `<div style="display:flex;align-items:center;gap:8px;margin:8px 0;cursor:pointer;" onclick="App.filterProjectByStage('${s.stage}')"><span style="width:12px;height:12px;background:${s.color};border-radius:2px;"></span><span>${App.getStageText(s.stage)}: ${s.count}</span></div>`).join('')}
-                    </div>
-                  `;
-                })()}
+                <div style="position:relative;">
+                  <div style="width:150px;height:150px;border-radius:50%;background:conic-gradient(${stageGradient});cursor:pointer;" onclick="App.filterByStage()"></div>
+                </div>
+                <div style="text-align:left;">
+                  ${stageData.map(s => `<div style="display:flex;align-items:center;gap:8px;margin:8px 0;cursor:pointer;" onclick="App.filterProjectByStage('${s.key}')"><span style="width:12px;height:12px;background:${s.color};border-radius:2px;"></span><span>${s.label}: ${s.count}</span></div>`).join('')}
+                </div>
               </div>
             </div>
           </div>
