@@ -1684,72 +1684,81 @@ return [
       },
 
 renderTasks() {
-const customersWithTasks = this.data.customers.map(customer => {
-const customerProjects = this.data.projects.filter(p => (p.customerIds || []).includes(customer.id));
-const allTasks = [];
-customerProjects.forEach(p => {
-p.tasks.forEach(t => {
-allTasks.push({
-...t,
-projectId: p.id,
-projectName: p.name,
-stage: p.stage,
-customerId: customer.id
+const projectsWithTasks = this.data.projects.map(p => {
+const customerTasksMap = {};
+(p.customerIds || []).forEach(cid => {
+const customer = this.data.customers.find(c => c.id === cid);
+if (customer) {
+customerTasksMap[cid] = {
+customer: { id: cid, name: customer.name, customerNo: customer.customerNo || '' },
+tasks: p.tasks.map(t => ({ ...t, customerId: cid }))
+};
+}
 });
+const allTasks = [];
+Object.keys(customerTasksMap).forEach(cid => {
+const ct = customerTasksMap[cid];
+ct.tasks.forEach(t => {
+allTasks.push({ ...t, customerId: cid });
 });
 });
 return {
-...customer,
-projectCount: customerProjects.length,
+...p,
+customerTasksMap,
 pendingTasks: allTasks.filter(t => !t.completed),
-completedTasks: allTasks.filter(t => t.completed),
-sortedTasks: [...allTasks.filter(t => !t.completed), ...allTasks.filter(t => t.completed)]
+completedTasks: allTasks.filter(t => t.completed)
 };
-}).filter(c => c.sortedTasks.length > 0);
+}).filter(p => (p.customerIds || []).length > 0 && p.tasks.length > 0);
 
 return `
 <div class="fade-in">
-${customersWithTasks.length > 0 ? customersWithTasks.map((c, idx) => `
+${projectsWithTasks.length > 0 ? projectsWithTasks.map((p, pIdx) => `
 <div class="card" style="margin-bottom: 16px;">
-<div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding-bottom:12px;border-bottom:1px solid var(--border);" onclick="App.toggleTaskSection('taskSection${idx}')">
+<div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding-bottom:12px;border-bottom:1px solid var(--border);" onclick="App.toggleTaskSection('taskSection${pIdx}')">
 <div style="display:flex;align-items:center;gap:12px;">
-<span id="taskIcon${idx}" style="font-size:12px;">▼</span>
+<span id="taskIcon${pIdx}" style="font-size:12px;">▼</span>
 <div>
-<h3 style="font-size:16px;color:var(--primary);cursor:pointer;" onclick="event.stopPropagation();App.showCustomerTasks('${c.id}')">${c.name}</h3>
-<div style="font-size:12px;color:var(--text-light);">客户号: ${c.customerNo || '-'} | 项目数: ${c.projectCount}</div>
+<h3 style="font-size:16px;color:var(--primary);cursor:pointer;" onclick="event.stopPropagation();App.showProjectDetail('${p.id}')">${p.name}</h3>
+<div style="font-size:12px;color:var(--text-light);">${(p.customerNames || []).join(', ')}</div>
 </div>
 </div>
 <div style="text-align:right;">
+<span class="stage-badge ${p.stage}">${this.getStageText(p.stage)}</span>
 <div style="font-size:12px;color:var(--text-light);margin-top:4px;">
-待办: ${c.pendingTasks.length} | 已完成: ${c.completedTasks.length}
+待办: ${p.pendingTasks.length} | 已完成: ${p.completedTasks.length}
 </div>
 </div>
 </div>
-<div id="taskSection${idx}">
-${c.sortedTasks.length > 0 ? c.sortedTasks.map(t => {
+<div id="taskSection${pIdx}">
+${Object.keys(p.customerTasksMap || {}).map((cid, cIdx) => {
+const ct = p.customerTasksMap[cid];
+const pendingTasks = ct.tasks.filter(t => !t.completed);
+const completedTasks = ct.tasks.filter(t => t.completed);
 return `
-<div style="margin-bottom:16px;padding:12px;background:var(--bg);border-radius:4px;">
-<div style="font-size:12px;color:var(--primary);margin-bottom:8px;">项目: <span style="cursor:pointer;text-decoration:underline;" onclick="App.showProjectDetail('${t.projectId}')">${t.projectName}</span> <span class="stage-badge ${t.stage}" style="margin-left:8px;">${this.getStageText(t.stage)}</span></div>
+<div style="margin-bottom:20px;padding:12px;background:var(--bg);border-radius:4px;">
+<div style="font-size:13px;color:var(--secondary);margin-bottom:12px;font-weight:500;">客户: ${ct.customer.name} ${ct.customer.customerNo ? `(${ct.customer.customerNo})` : ''}</div>
 <ul class="task-list" style="margin-left:0;">
+${[...pendingTasks, ...completedTasks].map(t => `
 <li class="task-item">
-<div class="task-checkbox ${t.completed ? 'checked' : ''}" onclick="App.toggleTask('${t.id}', '${t.projectId}')">
+<div class="task-checkbox ${t.completed ? 'checked' : ''}" onclick="App.toggleTask('${t.id}', '${p.id}')">
 ${t.completed ? '✓' : ''}
 </div>
 <div class="task-content">
 <div class="task-title ${t.completed ? 'checked' : ''}">${t.title}</div>
 </div>
 </li>
+`).join('')}
 </ul>
 </div>
 `;
-}).join('') : '<div style="padding:16px;color:var(--text-light);">暂无任务</div>'}
+}).join('')}
 </div>
 </div>
 `).join('') : `
 <div class="card">
 <div class="empty-state">
 <div class="empty-icon">✅</div>
-<p>暂无客户任务</p>
+<p>暂无项目任务</p>
 </div>
 </div>
 `}
