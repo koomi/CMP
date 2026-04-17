@@ -1303,18 +1303,18 @@ return [
 ];
 },
 
-      generateSampleDeposits() {
-        return [
-          { id: 'D001', customerId: 'C001', customerName: '北京创新科技有限公司', amount: 5000000, type: '定期', date: '2025-01-15', rate: 2.1 },
-          { id: 'D002', customerId: 'C002', customerName: '上海国际贸易集团', amount: 8000000, type: '活期', date: '2025-02-20', rate: 0.35 },
-          { id: 'D003', customerId: 'C003', customerName: '深圳智能制造企业', amount: 3000000, type: '定期', date: '2025-03-10', rate: 2.25 },
-          { id: 'D004', customerId: 'C004', customerName: '广州物流运输公司', amount: 2000000, type: '活期', date: '2025-03-25', rate: 0.35 },
-          { id: 'D005', customerId: 'C005', customerName: '杭州电子商务', amount: 6000000, type: '定期', date: '2025-04-05', rate: 2.15 },
-          { id: 'D006', customerId: 'C001', customerName: '北京创新科技有限公司', amount: 1500000, type: '活期', date: '2025-04-18', rate: 0.35 },
-          { id: 'D007', customerId: 'C006', customerName: '张三', amount: 500000, type: '定期', date: '2025-05-01', rate: 2.3 },
-          { id: 'D008', customerId: 'C007', customerName: '李四', amount: 300000, type: '活期', date: '2025-05-10', rate: 0.35 }
-        ];
-      },
+generateSampleDeposits() {
+  return [
+    { id: 'D001', customerId: 'C001', customerName: '北京创新科技有限公司', amount: 5000000, type: '定期', productName: '定期存款A', date: '2025-01-15', rate: 2.1, ftpRate: 1.5, maturityDate: '2026-01-15' },
+    { id: 'D002', customerId: 'C002', customerName: '上海国际贸易集团', amount: 8000000, type: '活期', productName: '活期账户', date: '2025-02-20', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
+    { id: 'D003', customerId: 'C003', customerName: '深圳智能制造企业', amount: 3000000, type: '定期', productName: '定期存款B', date: '2025-03-10', rate: 2.25, ftpRate: 1.6, maturityDate: '2026-03-10' },
+    { id: 'D004', customerId: 'C004', customerName: '广州物流运输公司', amount: 2000000, type: '活期', productName: '活期账户', date: '2025-03-25', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
+    { id: 'D005', customerId: 'C005', customerName: '杭州电子商务', amount: 6000000, type: '定期', productName: '定期存款A', date: '2025-04-05', rate: 2.15, ftpRate: 1.5, maturityDate: '2026-04-05' },
+    { id: 'D006', customerId: 'C001', customerName: '北京创新科技有限公司', amount: 1500000, type: '活期', productName: '活期账户', date: '2025-04-18', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
+    { id: 'D007', customerId: 'C006', customerName: '张三', amount: 500000, type: '定期', productName: '定期存款B', date: '2025-05-01', rate: 2.3, ftpRate: 1.65, maturityDate: '2026-05-01' },
+    { id: 'D008', customerId: 'C007', customerName: '李四', amount: 300000, type: '活期', productName: '活期账户', date: '2025-05-10', rate: 0.35, ftpRate: 0.2, maturityDate: '' }
+  ];
+},
 
 generateSampleData() {
       const customers = ['北京创新科技有限公司', '上海国际贸易集团', '深圳智能制造企业', '广州物流运输公司', '杭州电子商务', '成都软件开发', '武汉新能源科技', '南京制造业', '西安高新材料', '重庆文化旅游'];
@@ -2424,41 +2424,66 @@ this.data.customers.push(customerData);
             </div>
           </div>
 
-          <div class="card fade-in">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-              <h3 style="font-size:16px;">客户存款明细</h3>
-              <button class="btn btn-primary" onclick="App.openDepositModal()">+ 新增存款</button>
-            </div>
-            <table class="projects-table">
-              <thead>
-                <tr>
-                  <th>存款编号</th>
-                  <th>客户名称</th>
-                  <th>存款类型</th>
-                  <th>存款金额</th>
-                  <th>利率(%)</th>
-                  <th>存款日期</th>
-                  <th>操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${deposits.map(d => `
-                  <tr>
-                    <td>${d.id}</td>
-                    <td>${d.customerName}</td>
-                    <td>${d.type === '定期' ? '<span class="stage-badge post">定期</span>' : '<span class="stage-badge mid">活期</span>'}</td>
-                    <td class="amount">${this.formatAmount(d.amount)}</td>
-                    <td>${d.rate}%</td>
-                    <td>${d.date}</td>
-                    <td>
-                      <button class="btn btn-secondary" style="padding:4px 8px;font-size:12px;margin-right:8px;" onclick="App.editDeposit('${d.id}')">编辑</button>
-                      <button class="btn btn-danger" style="padding:4px 8px;font-size:12px;" onclick="App.deleteDeposit('${d.id}')">删除</button>
-                    </td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
+<div class="card fade-in">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+    <h3 style="font-size:16px;">客户存款明细</h3>
+    <button class="btn btn-primary" onclick="App.openDepositModal()">+ 新增存款</button>
+  </div>
+  <table class="projects-table">
+    <thead>
+      <tr>
+        <th>存款编号</th>
+        <th>客户名称</th>
+        <th>产品名称</th>
+        <th>存款类型</th>
+        <th>存款金额</th>
+        <th>对客利率(%)</th>
+        <th>FTP利率(%)</th>
+        <th>利差(%)</th>
+        <th>存款日期</th>
+        <th>到期日</th>
+        <th>剩余期限</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+    ${deposits.map(d => {
+      const spread = (d.rate || 0) - (d.ftpRate || 0);
+      let daysLeft = '';
+      let daysStyle = '';
+      if (d.maturityDate) {
+        const maturity = new Date(d.maturityDate);
+        const today = new Date();
+        const diff = Math.ceil((maturity - today) / (1000 * 60 * 60 * 24));
+        if (diff > 0) {
+          daysLeft = diff + '天';
+          if (diff < 30) daysStyle = 'color:#e53e3e;font-weight:600;';
+        } else {
+          daysLeft = '已到期';
+        }
+      }
+      return `
+      <tr>
+        <td>${d.id}</td>
+        <td>${d.customerName}</td>
+        <td>${d.productName || '-'}</td>
+        <td>${d.type === '定期' ? '<span class="stage-badge post">定期</span>' : '<span class="stage-badge mid">活期</span>'}</td>
+        <td class="amount">${this.formatAmount(d.amount)}</td>
+        <td>${d.rate || 0}%</td>
+        <td>${d.ftpRate || 0}%</td>
+        <td style="color:${spread >= 0 ? '#38a169' : '#e53e3e'};font-weight:500;">${spread.toFixed(2)}%</td>
+        <td>${d.date}</td>
+        <td>${d.maturityDate || '-'}</td>
+        <td style="${daysStyle}">${daysLeft || '-'}</td>
+        <td>
+          <button class="btn btn-secondary" style="padding:4px 8px;font-size:12px;margin-right:8px;" onclick="App.editDeposit('${d.id}')">编辑</button>
+          <button class="btn btn-danger" style="padding:4px 8px;font-size:12px;" onclick="App.deleteDeposit('${d.id}')">删除</button>
+        </td>
+      </tr>
+    `}).join('')}
+    </tbody>
+  </table>
+</div>
         `;
       },
 
@@ -2993,44 +3018,56 @@ if (icon) icon.textContent = '▶';
           ).join('');
         };
 
-        document.getElementById('detailContent').innerHTML = `
-          <form style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
-            <div class="form-group">
-              <label class="form-label">存款编号</label>
-              <input type="text" class="form-input" id="depositId" value="${deposit ? deposit.id : ''}" ${isEdit ? 'readonly' : ''}>
-            </div>
-            <div class="form-group">
-              <label class="form-label">客户 *</label>
-              <input type="text" class="form-input" placeholder="搜索客户..." id="depositCustomerSearch" oninput="App.filterDepositCustomer(this.value)" style="margin-bottom:8px;">
-              <select class="form-select" id="depositCustomer" required size="4">
-                ${renderDepositCustomerOptions()}
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">存款类型 *</label>
-              <select class="form-select" id="depositType" required>
-                <option value="定期" ${deposit && deposit.type === '定期' ? 'selected' : ''}>定期</option>
-                <option value="活期" ${deposit && deposit.type === '活期' ? 'selected' : ''}>活期</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">存款金额 *</label>
-              <input type="number" class="form-input" id="depositAmount" value="${deposit ? deposit.amount : ''}" required min="0">
-            </div>
-            <div class="form-group">
-              <label class="form-label">利率（%）</label>
-              <input type="number" class="form-input" id="depositRate" value="${deposit ? deposit.rate : ''}" step="0.01">
-            </div>
-            <div class="form-group">
-              <label class="form-label">存款日期</label>
-              <input type="date" class="form-input" id="depositDate" value="${deposit ? deposit.date : ''}">
-            </div>
-          </form>
-          <div style="margin-top:24px;display:flex;justify-content:flex-end;gap:12px;">
-            <button class="btn btn-secondary" onclick="App.closeModal('detailModal')">取消</button>
-            <button class="btn btn-primary" onclick="App.saveDeposit(${isEdit ? `'${deposit.id}'` : 'null'})">保存</button>
-          </div>
-        `;
+document.getElementById('detailContent').innerHTML = `
+<form style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+  <div class="form-group">
+    <label class="form-label">存款编号</label>
+    <input type="text" class="form-input" id="depositId" value="${deposit ? deposit.id : ''}" ${isEdit ? 'readonly' : ''}>
+  </div>
+  <div class="form-group">
+    <label class="form-label">客户 *</label>
+    <input type="text" class="form-input" placeholder="搜索客户..." id="depositCustomerSearch" oninput="App.filterDepositCustomer(this.value)" style="margin-bottom:8px;">
+    <select class="form-select" id="depositCustomer" required size="4">
+      ${renderDepositCustomerOptions()}
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">产品名称</label>
+    <input type="text" class="form-input" id="depositProductName" value="${deposit ? deposit.productName : ''}" placeholder="请输入产品名称">
+  </div>
+  <div class="form-group">
+    <label class="form-label">存款类型 *</label>
+    <select class="form-select" id="depositType" required>
+      <option value="定期" ${deposit && deposit.type === '定期' ? 'selected' : ''}>定期</option>
+      <option value="活期" ${deposit && deposit.type === '活期' ? 'selected' : ''}>活期</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">存款金额 *</label>
+    <input type="number" class="form-input" id="depositAmount" value="${deposit ? deposit.amount : ''}" required min="0">
+  </div>
+  <div class="form-group">
+    <label class="form-label">对客利率（%）</label>
+    <input type="number" class="form-input" id="depositRate" value="${deposit ? deposit.rate : ''}" step="0.01">
+  </div>
+  <div class="form-group">
+    <label class="form-label">FTP利率（%）</label>
+    <input type="number" class="form-input" id="depositFtpRate" value="${deposit ? deposit.ftpRate : ''}" step="0.01">
+  </div>
+  <div class="form-group">
+    <label class="form-label">存款日期</label>
+    <input type="date" class="form-input" id="depositDate" value="${deposit ? deposit.date : ''}">
+  </div>
+  <div class="form-group">
+    <label class="form-label">存款到期日</label>
+    <input type="date" class="form-input" id="depositMaturityDate" value="${deposit ? deposit.maturityDate : ''}">
+  </div>
+</form>
+<div style="margin-top:24px;display:flex;justify-content:flex-end;gap:12px;">
+  <button class="btn btn-secondary" onclick="App.closeModal('detailModal')">取消</button>
+  <button class="btn btn-primary" onclick="App.saveDeposit(${isEdit ? `'${deposit.id}'` : 'null'})">保存</button>
+</div>
+`;
       },
 
       editDeposit(id) {
@@ -3038,19 +3075,22 @@ if (icon) icon.textContent = '▶';
         if (deposit) this.openDepositModal(deposit);
       },
 
-      saveDeposit(existingId) {
-        const id = existingId || `D${String(this.data.deposits.length + 1).padStart(3, '0')}`;
-        const customerId = document.getElementById('depositCustomer').value;
-        const customerName = this.data.customers.find(c => c.id === customerId)?.name || '';
-        const type = document.getElementById('depositType').value;
-        const amount = parseFloat(document.getElementById('depositAmount').value);
-        const rate = parseFloat(document.getElementById('depositRate').value) || 0;
-        const date = document.getElementById('depositDate').value || new Date().toISOString().split('T')[0];
+saveDeposit(existingId) {
+  const id = existingId || `D${String(this.data.deposits.length + 1).padStart(3, '0')}`;
+  const customerId = document.getElementById('depositCustomer').value;
+  const customerName = this.data.customers.find(c => c.id === customerId)?.name || '';
+  const productName = document.getElementById('depositProductName').value || '';
+  const type = document.getElementById('depositType').value;
+  const amount = parseFloat(document.getElementById('depositAmount').value);
+  const rate = parseFloat(document.getElementById('depositRate').value) || 0;
+  const ftpRate = parseFloat(document.getElementById('depositFtpRate').value) || 0;
+  const date = document.getElementById('depositDate').value || new Date().toISOString().split('T')[0];
+  const maturityDate = document.getElementById('depositMaturityDate').value || '';
 
-        if (!customerId || !amount) { alert('请填写必填字段'); return; }
+  if (!customerId || !amount) { alert('请填写必填字段'); return; }
 
-        const depositData = { id, customerId, customerName, type, amount, rate, date };
-        if (existingId) {
+  const depositData = { id, customerId, customerName, productName, type, amount, rate, ftpRate, date, maturityDate };
+  if (existingId) {
           const idx = this.data.deposits.findIndex(d => d.id === existingId);
           this.data.deposits[idx] = depositData;
         } else {
