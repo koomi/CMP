@@ -1175,55 +1175,120 @@
 
   <script>
     const App = {
-      data: {
-        projects: [],
-        customers: [],
-        deposits: [],
-        currentPage: 'dashboard',
-        searchQuery: '',
-        filterStatus: '',
-        filterStage: ''
-      },
+data: {
+  projects: [],
+  customers: [],
+  deposits: [],
+  currentPage: 'dashboard',
+  searchQuery: '',
+  filterStatus: '',
+  filterStage: '',
+  options: {
+    stages: [
+      { value: 'pre', label: '贷前调查' },
+      { value: 'mid', label: '贷中审批' },
+      { value: 'post', label: '贷后管理' }
+    ],
+    statuses: [
+      { value: 'pending', label: '待处理' },
+      { value: 'processing', label: '审批中' },
+      { value: 'completed', label: '已完成' },
+      { value: 'rejected', label: '已拒绝' }
+    ],
+    terms: [
+      { value: '3', label: '3个月' },
+      { value: '6', label: '6个月' },
+      { value: '12', label: '12个月' },
+      { value: '24', label: '24个月' },
+      { value: '36', label: '36个月' }
+    ],
+    guaranteeTypes: [
+      { value: 'credit', label: '信用贷款' },
+      { value: 'mortgage', label: '抵押贷款' },
+      { value: 'pledge', label: '质押贷款' },
+      { value: 'guarantee', label: '担保贷款' }
+    ],
+    urgencies: [
+      { value: 'normal', label: '普通' },
+      { value: 'urgent', label: '紧急' },
+      { value: 'very_urgent', label: '非常紧急' }
+    ]
+  }
+},
 
-      init() {
-        if (!this.checkLogin()) {
-          document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;"><h2>请先登录</h2><p>密码错误或已超时</p></div>';
-          return;
-        }
-        this.loadData();
-        this.bindEvents();
-        this.render();
-      },
+init() {
+  if (!this.checkLogin()) {
+    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;"><h2>请先登录</h2><p>密码错误或已超时</p></div>';
+    return;
+  }
+  this.loadData();
+  this.initOptionDropdowns();
+  this.bindEvents();
+  this.render();
+},
 
-      loadData() {
-        const stored = localStorage.getItem('creditProjects');
-        if (stored) {
-          this.data.projects = JSON.parse(stored);
-        } else {
-          this.data.projects = this.generateSampleData();
-          this.saveData();
-        }
-        const custStored = localStorage.getItem('creditCustomers');
-        if (custStored) {
-          this.data.customers = JSON.parse(custStored);
-        } else {
-          this.data.customers = this.generateSampleCustomers();
-          this.saveData();
-        }
-        const depStored = localStorage.getItem('creditDeposits');
-        if (depStored) {
-          this.data.deposits = JSON.parse(depStored);
-        } else {
-          this.data.deposits = this.generateSampleDeposits();
-          this.saveData();
-        }
-      },
+loadData() {
+  const stored = localStorage.getItem('creditProjects');
+  if (stored) {
+    this.data.projects = JSON.parse(stored);
+  } else {
+    this.data.projects = this.generateSampleData();
+    this.saveData();
+  }
+  const custStored = localStorage.getItem('creditCustomers');
+  if (custStored) {
+    this.data.customers = JSON.parse(custStored);
+  } else {
+    this.data.customers = this.generateSampleCustomers();
+    this.saveData();
+  }
+  const depStored = localStorage.getItem('creditDeposits');
+  if (depStored) {
+    this.data.deposits = JSON.parse(depStored);
+  } else {
+    this.data.deposits = this.generateSampleDeposits();
+    this.saveData();
+  }
+  const optStored = localStorage.getItem('creditOptions');
+  if (optStored) {
+    this.data.options = JSON.parse(optStored);
+  } else {
+    this.saveOptions();
+  }
+},
 
-      saveData() {
-        localStorage.setItem('creditProjects', JSON.stringify(this.data.projects));
-        localStorage.setItem('creditCustomers', JSON.stringify(this.data.customers));
-        localStorage.setItem('creditDeposits', JSON.stringify(this.data.deposits));
-      },
+saveData() {
+  localStorage.setItem('creditProjects', JSON.stringify(this.data.projects));
+  localStorage.setItem('creditCustomers', JSON.stringify(this.data.customers));
+  localStorage.setItem('creditDeposits', JSON.stringify(this.data.deposits));
+},
+
+saveOptions() {
+  localStorage.setItem('creditOptions', JSON.stringify(this.data.options));
+},
+
+initOptionDropdowns() {
+  const creditTerm = document.getElementById('creditTerm');
+  if (creditTerm) {
+    creditTerm.innerHTML = this.data.options.terms.map(t => `<option value="${t.value}">${t.label}</option>`).join('');
+  }
+  const guaranteeType = document.getElementById('guaranteeType');
+  if (guaranteeType) {
+    guaranteeType.innerHTML = this.data.options.guaranteeTypes.map(t => `<option value="${t.value}">${t.label}</option>`).join('');
+  }
+  const urgency = document.getElementById('urgency');
+  if (urgency) {
+    urgency.innerHTML = this.data.options.urgencies.map(u => `<option value="${u.value}">${u.label}</option>`).join('');
+  }
+  const editStage = document.getElementById('editStage');
+  if (editStage) {
+    editStage.innerHTML = this.data.options.stages.map(s => `<option value="${s.value}">${s.label}</option>`).join('');
+  }
+  const editStatus = document.getElementById('editStatus');
+  if (editStatus) {
+    editStatus.innerHTML = this.data.options.statuses.map(s => `<option value="${s.value}">${s.label}</option>`).join('');
+  }
+},
 
 generateSampleCustomers() {
 return [
@@ -1609,27 +1674,21 @@ saveProject() {
         return projects;
       },
 
-      getStats() {
-        const projects = this.data.projects;
-        const total = projects.length;
-        const pending = projects.filter(p => p.status === 'pending').length;
-        const processing = projects.filter(p => p.status === 'processing').length;
-        const completed = projects.filter(p => p.status === 'completed').length;
-        const rejected = projects.filter(p => p.status === 'rejected').length;
-        const totalAmount = projects.reduce((sum, p) => sum + p.amount, 0);
-        const approvedAmount = projects.filter(p => p.status === 'completed').reduce((sum, p) => sum + p.amount, 0);
-
-        return {
-          total,
-          pending,
-          processing,
-          completed,
-          rejected,
-          totalAmount,
-          approvedAmount,
-          passRate: total > 0 ? ((completed / total) * 100).toFixed(1) : 0
-        };
-      },
+getStats() {
+  const projects = this.data.projects;
+  const total = projects.length;
+  const stats = { total, totalAmount: 0, approvedAmount: 0 };
+  this.data.options.statuses.forEach(s => {
+    stats[s.value] = projects.filter(p => p.status === s.value).length;
+  });
+  stats.totalAmount = projects.reduce((sum, p) => sum + p.amount, 0);
+  const completedStatus = this.data.options.statuses.find(s => s.label === '已完成');
+  if (completedStatus) {
+    stats.approvedAmount = projects.filter(p => p.status === completedStatus.value).reduce((sum, p) => sum + p.amount, 0);
+    stats.passRate = total > 0 ? ((stats[completedStatus.value] || 0) / total * 100).toFixed(1) : 0;
+  }
+  return stats;
+},
 
       getStageStats() {
         const stages = ['pre', 'mid', 'post'];
@@ -1660,10 +1719,10 @@ formatAmount(amount) {
     return (amount / 10000).toFixed(2) + '万元';
   },
 
-  getUrgencyText(urgency) {
-    const texts = { normal: '普通', urgent: '紧急', very_urgent: '非常紧急' };
-    return texts[urgency] || '普通';
-  },
+getUrgencyText(urgency) {
+  const found = this.data.options.urgencies.find(u => u.value === urgency);
+  return found ? found.label : urgency;
+},
 
   getUrgencyClass(urgency) {
     return urgency === 'very_urgent' ? 'urgency-very-urgent' : (urgency === 'urgent' ? 'urgency-urgent' : 'urgency-normal');
@@ -1673,24 +1732,24 @@ formatAmount(amount) {
         return new Date(dateStr).toLocaleDateString('zh-CN');
       },
 
-      getStatusText(status) {
-        const texts = { pending: '待处理', processing: '审批中', completed: '已完成', rejected: '已拒绝' };
-        return texts[status] || status;
-      },
+getStatusText(status) {
+  const found = this.data.options.statuses.find(s => s.value === status);
+  return found ? found.label : status;
+},
 
-      getStageText(stage) {
-        const texts = { pre: '贷前调查', mid: '贷中审批', post: '贷后管理' };
-        return texts[stage] || stage;
-      },
+getStageText(stage) {
+  const found = this.data.options.stages.find(s => s.value === stage);
+  return found ? found.label : stage;
+},
 
       getCustomerTypeText(type) {
         return type === 'enterprise' ? '企业客户' : '个人客户';
       },
 
-      getGuaranteeTypeText(type) {
-        const texts = { credit: '信用贷款', mortgage: '抵押贷款', pledge: '质押贷款', guarantee: '担保贷款' };
-        return texts[type] || type;
-      },
+getGuaranteeTypeText(type) {
+  const found = this.data.options.guaranteeTypes.find(g => g.value === type);
+  return found ? found.label : type;
+},
 
       render() {
         const page = this.data.currentPage;
@@ -1723,11 +1782,11 @@ renderDashboard() {
         <div class="stat-value">${stats.total}</div>
         <div class="stat-label">总项目数</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon warning">⏳</div>
-        <div class="stat-value">${stats.pending + stats.processing}</div>
-        <div class="stat-label">待处理项目</div>
-      </div>
+<div class="stat-card">
+  <div class="stat-icon warning">⏳</div>
+  <div class="stat-value">${(stats.pending || 0) + (stats.processing || 0)}</div>
+  <div class="stat-label">待处理项目</div>
+</div>
       <div class="stat-card">
         <div class="stat-icon accent">💰</div>
         <div class="stat-value">${(stats.totalAmount / 10000).toFixed(0)}万</div>
@@ -1831,23 +1890,18 @@ renderProjects() {
       </div>
       ${postLoanCalendar}
       ` : ''}
-    <div class="filter-bar fade-in">
-      <select class="filter-select" id="statusFilter" onchange="App.filterByStatus()">
-        <option value="">全部状态</option>
-        <option value="pending">待处理</option>
-        <option value="processing">审批中</option>
-        <option value="completed">已完成</option>
-        <option value="rejected">已拒绝</option>
-      </select>
-      <select class="filter-select" id="stageFilter" onchange="App.filterByStage()">
-        <option value="">全部阶段</option>
-        <option value="pre">贷前调查</option>
-        <option value="mid">贷中审批</option>
-        <option value="post">贷后管理</option>
-      </select>
-      ${stageFilter ? `<button class="btn btn-secondary" onclick="App.clearStageFilter()">清除筛选</button>` : ''}
-      <button class="btn btn-primary" onclick="App.exportProjectsXlsx()">导出Excel</button>
-    </div>
+<div class="filter-bar fade-in">
+  <select class="filter-select" id="statusFilter" onchange="App.filterByStatus()">
+    <option value="">全部状态</option>
+    ${this.data.options.statuses.map(s => `<option value="${s.value}">${s.label}</option>`).join('')}
+  </select>
+  <select class="filter-select" id="stageFilter" onchange="App.filterByStage()">
+    <option value="">全部阶段</option>
+    ${this.data.options.stages.map(s => `<option value="${s.value}">${s.label}</option>`).join('')}
+  </select>
+  ${stageFilter ? `<button class="btn btn-secondary" onclick="App.clearStageFilter()">清除筛选</button>` : ''}
+  <button class="btn btn-primary" onclick="App.exportProjectsXlsx()">导出Excel</button>
+</div>
 
     <div class="section fade-in">
       <div class="section-body" style="padding: 0;">
@@ -2017,23 +2071,27 @@ ${t.completed ? '✓' : ''}
 
 renderStatistics() {
     const stats = this.getStats();
-    const stageCounts = { pre: 0, mid: 0, post: 0 };
-    this.data.projects.forEach(p => stageCounts[p.stage]++);
+const stageCounts = {};
+  this.data.options.stages.forEach(s => stageCounts[s.value] = 0);
+  this.data.projects.forEach(p => { if (stageCounts[p.stage] !== undefined) stageCounts[p.stage]++; });
 
-    const total = stats.total || 1;
+  const total = stats.total || 1;
+  const statusColors = { pending: '#dd6b20', processing: '#1a365d', completed: '#38a169', rejected: '#e53e3e' };
+  const stageColors = { pre: '#2b6cb0', mid: '#b7791f', post: '#276749' };
 
-    const statusData = [
-      { key: 'pending', label: '待处理', count: stats.pending, color: '#dd6b20' },
-      { key: 'processing', label: '审批中', count: stats.processing, color: '#1a365d' },
-      { key: 'completed', label: '已完成', count: stats.completed, color: '#38a169' },
-      { key: 'rejected', label: '已拒绝', count: stats.rejected, color: '#e53e3e' }
-    ];
+  const statusData = this.data.options.statuses.map(s => ({
+    key: s.value,
+    label: s.label,
+    count: stats[s.value] || 0,
+    color: statusColors[s.value] || '#718096'
+  }));
 
-    const stageData = [
-      { key: 'pre', label: '贷前调查', count: stageCounts.pre, color: '#2b6cb0' },
-      { key: 'mid', label: '贷中审批', count: stageCounts.mid, color: '#b7791f' },
-      { key: 'post', label: '贷后管理', count: stageCounts.post, color: '#276749' }
-    ];
+  const stageData = this.data.options.stages.map(s => ({
+    key: s.value,
+    label: s.label,
+    count: stageCounts[s.value] || 0,
+    color: stageColors[s.value] || '#718096'
+  }));
 
     const buildPie = (data) => {
       let gradient = '';
@@ -2378,76 +2436,117 @@ this.data.customers.push(customerData);
         `;
       },
 
-      renderSettings() {
-        return `
-          <div class="card fade-in">
-            <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:24px;" onclick="App.toggleSection('pwSection')">
-              <h3 style="font-size:16px;">🔐 密码管理</h3>
-              <span id="pwSectionIcon" style="font-size:12px;">▼</span>
-            </div>
-            <div id="pwSection">
-              <div class="form-group">
-                <label class="form-label">当前密码</label>
-                <input type="password" class="form-input" id="currentPassword" placeholder="请输入当前密码">
-              </div>
-              <div class="form-group">
-                <label class="form-label">新密码</label>
-                <input type="password" class="form-input" id="newPassword" placeholder="请输入新密码（至少6位）">
-              </div>
-              <div class="form-group">
-                <label class="form-label">确认新密码</label>
-                <input type="password" class="form-input" id="confirmPassword" placeholder="请再次输入新密码">
-              </div>
-              <button class="btn btn-primary" onclick="App.changePassword()">修改密码</button>
-            </div>
-          </div>
+renderSettings() {
+  const renderOptionItems = (options, type) => {
+    return options.map(opt => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg);border-radius:4px;margin-bottom:8px;">
+        <span><strong>${opt.value}</strong> - ${opt.label}</span>
+        <div>
+          <button class="btn btn-secondary" style="padding:4px 8px;font-size:12px;margin-right:4px;" onclick="App.editOption('${type}', '${opt.value}')">编辑</button>
+          <button class="btn btn-danger" style="padding:4px 8px;font-size:12px;" onclick="App.deleteOption('${type}', '${opt.value}')">删除</button>
+        </div>
+      </div>
+    `).join('');
+  };
 
-          <div class="card fade-in" style="margin-top: 24px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:24px;" onclick="App.toggleSection('sysSection')">
-              <h3 style="font-size:16px;">⚙️ 系统设置</h3>
-              <span id="sysSectionIcon" style="font-size:12px;">▼</span>
-            </div>
-            <div id="sysSection">
-              <div class="form-group">
-                <label class="form-label">默认利率（%）</label>
-                <input type="number" class="form-input" value="4.35" step="0.01">
-              </div>
-              <div class="form-group">
-                <label class="form-label">默认授信期限</label>
-                <select class="form-select">
-                  <option value="6">6个月</option>
-                  <option value="12" selected>12个月</option>
-                  <option value="24">24个月</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-label">默认担保方式</label>
-                <select class="form-select">
-                  <option value="credit" selected>信用贷款</option>
-                  <option value="mortgage">抵押贷款</option>
-                  <option value="pledge">质押贷款</option>
-                  <option value="guarantee">担保贷款</option>
-                </select>
-              </div>
-              <button class="btn btn-primary">保存设置</button>
-            </div>
-          </div>
+  return `
+  <div class="card fade-in">
+    <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:24px;" onclick="App.toggleSection('pwSection')">
+      <h3 style="font-size:16px;">🔐 密码管理</h3>
+      <span id="pwSectionIcon" style="font-size:12px;">▼</span>
+    </div>
+    <div id="pwSection">
+      <div class="form-group">
+        <label class="form-label">当前密码</label>
+        <input type="password" class="form-input" id="currentPassword" placeholder="请输入当前密码">
+      </div>
+      <div class="form-group">
+        <label class="form-label">新密码</label>
+        <input type="password" class="form-input" id="newPassword" placeholder="请输入新密码（至少6位）">
+      </div>
+      <div class="form-group">
+        <label class="form-label">确认新密码</label>
+        <input type="password" class="form-input" id="confirmPassword" placeholder="请再次输入新密码">
+      </div>
+      <button class="btn btn-primary" onclick="App.changePassword()">修改密码</button>
+    </div>
+  </div>
 
-          <div class="card fade-in" style="margin-top: 24px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:24px;" onclick="App.toggleSection('dataSection')">
-              <h3 style="font-size:16px;">💾 数据管理</h3>
-              <span id="dataSectionIcon" style="font-size:12px;">▼</span>
-            </div>
-            <div id="dataSection">
-              <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                <button class="btn btn-secondary" onclick="App.exportData()">导出数据</button>
-                <button class="btn btn-secondary" onclick="App.importData()">导入数据</button>
-                <button class="btn btn-danger" onclick="App.clearData()">清空数据</button>
-              </div>
-            </div>
-          </div>
-        `;
-      },
+  <div class="card fade-in" style="margin-top: 24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:24px;" onclick="App.toggleSection('optSection')">
+      <h3 style="font-size:16px;">📋 选项配置管理</h3>
+      <span id="optSectionIcon" style="font-size:12px;">▼</span>
+    </div>
+    <div id="optSection">
+      <div style="margin-bottom: 24px;">
+        <h4 style="font-size:14px;margin-bottom:12px;color:var(--primary);">当前阶段</h4>
+        ${renderOptionItems(this.data.options.stages, 'stages')}
+        <button class="btn btn-secondary" onclick="App.addOption('stages')">+ 添加阶段</button>
+      </div>
+      <div style="margin-bottom: 24px;">
+        <h4 style="font-size:14px;margin-bottom:12px;color:var(--primary);">状态</h4>
+        ${renderOptionItems(this.data.options.statuses, 'statuses')}
+        <button class="btn btn-secondary" onclick="App.addOption('statuses')">+ 添加状态</button>
+      </div>
+      <div style="margin-bottom: 24px;">
+        <h4 style="font-size:14px;margin-bottom:12px;color:var(--primary);">授信期限</h4>
+        ${renderOptionItems(this.data.options.terms, 'terms')}
+        <button class="btn btn-secondary" onclick="App.addOption('terms')">+ 添加期限</button>
+      </div>
+      <div style="margin-bottom: 24px;">
+        <h4 style="font-size:14px;margin-bottom:12px;color:var(--primary);">担保方式</h4>
+        ${renderOptionItems(this.data.options.guaranteeTypes, 'guaranteeTypes')}
+        <button class="btn btn-secondary" onclick="App.addOption('guaranteeTypes')">+ 添加担保方式</button>
+      </div>
+      <div style="margin-bottom: 24px;">
+        <h4 style="font-size:14px;margin-bottom:12px;color:var(--primary);">紧急度</h4>
+        ${renderOptionItems(this.data.options.urgencies, 'urgencies')}
+        <button class="btn btn-secondary" onclick="App.addOption('urgencies')">+ 添加紧急度</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card fade-in" style="margin-top: 24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:24px;" onclick="App.toggleSection('sysSection')">
+      <h3 style="font-size:16px;">⚙️ 系统设置</h3>
+      <span id="sysSectionIcon" style="font-size:12px;">▼</span>
+    </div>
+    <div id="sysSection">
+      <div class="form-group">
+        <label class="form-label">默认利率（%）</label>
+        <input type="number" class="form-input" value="4.35" step="0.01">
+      </div>
+      <div class="form-group">
+        <label class="form-label">默认授信期限</label>
+        <select class="form-select">
+          ${this.data.options.terms.map(t => `<option value="${t.value}">${t.label}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">默认担保方式</label>
+        <select class="form-select">
+          ${this.data.options.guaranteeTypes.map(t => `<option value="${t.value}">${t.label}</option>`).join('')}
+        </select>
+      </div>
+      <button class="btn btn-primary">保存设置</button>
+    </div>
+  </div>
+
+  <div class="card fade-in" style="margin-top: 24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:24px;" onclick="App.toggleSection('dataSection')">
+      <h3 style="font-size:16px;">💾 数据管理</h3>
+      <span id="dataSectionIcon" style="font-size:12px;">▼</span>
+    </div>
+    <div id="dataSection">
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <button class="btn btn-secondary" onclick="App.exportData()">导出数据</button>
+        <button class="btn btn-secondary" onclick="App.importData()">导入数据</button>
+        <button class="btn btn-danger" onclick="App.clearData()">清空数据</button>
+      </div>
+    </div>
+  </div>
+`;
+},
 
 showProjectDetail(id) {
     const project = this.data.projects.find(p => p.id === id);
@@ -2965,11 +3064,61 @@ if (icon) icon.textContent = '▶';
               <div style="width:${percent}%;height:100%;background:${color2};border-radius:8px;transition:width 0.3s;"></div>
             </div>
             <span style="font-size:12px;white-space:nowrap;">${days}天</span>
-          </div>
-        `;
-      },
+</div>
+ `;
+},
 
-      bindPageEvents() {}
+addOption(type) {
+  const labels = {
+    stages: '阶段',
+    statuses: '状态',
+    terms: '授信期限',
+    guaranteeTypes: '担保方式',
+    urgencies: '紧急度'
+  };
+  const value = prompt(`请输入${labels[type]}的值（英文标识）:`);
+  if (!value) return;
+  const label = prompt(`请输入${labels[type]}的显示名称:`);
+  if (!label) return;
+
+  if (this.data.options[type].find(o => o.value === value)) {
+    alert('该值已存在');
+    return;
+  }
+
+  this.data.options[type].push({ value, label });
+  this.saveOptions();
+  this.render();
+},
+
+editOption(type, value) {
+  const option = this.data.options[type].find(o => o.value === value);
+  if (!option) return;
+
+  const newValue = prompt('修改值（英文标识）:', option.value);
+  if (!newValue) return;
+  const newLabel = prompt('修改显示名称:', option.label);
+  if (!newLabel) return;
+
+  if (newValue !== value && this.data.options[type].find(o => o.value === newValue)) {
+    alert('该值已存在');
+    return;
+  }
+
+  option.value = newValue;
+  option.label = newLabel;
+  this.saveOptions();
+  this.render();
+},
+
+deleteOption(type, value) {
+  if (!confirm('确定要删除这个选项吗？')) return;
+  this.data.options[type] = this.data.options[type].filter(o => o.value !== value);
+  this.saveOptions();
+  this.render();
+},
+
+bindPageEvents() {}
     };
 
     document.addEventListener('DOMContentLoaded', () => App.init());
