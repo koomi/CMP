@@ -849,10 +849,85 @@
       min-width: 140px;
     }
 
-    .filter-select:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
+.filter-select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.urgency-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.urgency-normal {
+  background: rgba(113, 128, 150, 0.1);
+  color: var(--text-light);
+}
+
+.urgency-urgent {
+  background: rgba(221, 107, 32, 0.1);
+  color: var(--warning);
+}
+
+.urgency-very-urgent {
+  background: rgba(229, 62, 62, 0.1);
+  color: var(--danger);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.project-row-second {
+  background: var(--bg);
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.project-row-second td {
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.duration-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.duration-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  max-width: 100px;
+}
+
+.duration-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+.current-node {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: var(--primary);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+}
   </style>
 </head>
 <body>
@@ -1013,11 +1088,72 @@
             <label class="form-label">结束时间</label>
             <input type="date" class="form-input" id="endDate">
           </div>
-          <div class="form-group" style="grid-column: span 2;">
-            <label class="form-label">备注说明</label>
-            <textarea class="form-textarea" id="remark" placeholder="请输入备注说明"></textarea>
-          </div>
-        </form>
+<div class="form-group" style="grid-column: span 2;">
+    <label class="form-label">备注说明</label>
+    <textarea class="form-textarea" id="remark" placeholder="请输入备注说明"></textarea>
+  </div>
+  <div class="form-group">
+    <label class="form-label">紧急度</label>
+    <select class="form-select" id="urgency">
+      <option value="normal">普通</option>
+      <option value="urgent">紧急</option>
+      <option value="very_urgent">非常紧急</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">当前阶段</label>
+    <select class="form-select" id="editStage">
+      <option value="pre">贷前调查</option>
+      <option value="mid">贷中审批</option>
+      <option value="post">贷后管理</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">状态</label>
+    <select class="form-select" id="editStatus">
+      <option value="pending">待处理</option>
+      <option value="processing">审批中</option>
+      <option value="completed">已完成</option>
+      <option value="rejected">已拒绝</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">动拨日期</label>
+    <input type="date" class="form-input" id="drawDate">
+  </div>
+  <div class="form-group" style="grid-column: span 2;">
+    <label class="form-label">贷后任务日期</label>
+    <div style="display:flex;gap:12px;margin-bottom:8px;flex-wrap:wrap;">
+      <label style="display:flex;align-items:center;gap:4px;cursor:pointer;">
+        <input type="radio" name="postLoanTaskType" value="quarterly" checked onchange="App.togglePostLoanTaskDates()"> 按季度
+      </label>
+      <label style="display:flex;align-items:center;gap:4px;cursor:pointer;">
+        <input type="radio" name="postLoanTaskType" value="halfyear" onchange="App.togglePostLoanTaskDates()"> 按半年
+      </label>
+      <label style="display:flex;align-items:center;gap:4px;cursor:pointer;">
+        <input type="radio" name="postLoanTaskType" value="custom" onchange="App.togglePostLoanTaskDates()"> 自定义
+      </label>
+    </div>
+    <div id="postLoanTaskDatesContainer" style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:12px;min-width:60px;">第1次:</span>
+        <input type="date" class="form-input" id="postLoanTaskDate1" style="width:200px;">
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:12px;min-width:60px;">第2次:</span>
+        <input type="date" class="form-input" id="postLoanTaskDate2" style="width:200px;">
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:12px;min-width:60px;">第3次:</span>
+        <input type="date" class="form-input" id="postLoanTaskDate3" style="width:200px;">
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:12px;min-width:60px;">第4次:</span>
+        <input type="date" class="form-input" id="postLoanTaskDate4" style="width:200px;">
+      </div>
+    </div>
+  </div>
+</form>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" id="cancelBtn">取消</button>
@@ -1114,43 +1250,57 @@ return [
         ];
       },
 
-      generateSampleData() {
-        const customers = ['北京创新科技有限公司', '上海国际贸易集团', '深圳智能制造企业', '广州物流运输公司', '杭州电子商务', '成都软件开发', '武汉新能源科技', '南京制造业', '西安高新材料', '重庆文化旅游'];
-        const statuses = ['pending', 'processing', 'completed', 'rejected'];
-        const stages = ['pre', 'mid', 'post'];
-        const projects = [];
+generateSampleData() {
+      const customers = ['北京创新科技有限公司', '上海国际贸易集团', '深圳智能制造企业', '广州物流运输公司', '杭州电子商务', '成都软件开发', '武汉新能源科技', '南京制造业', '西安高新材料', '重庆文化旅游'];
+      const statuses = ['pending', 'processing', 'completed', 'rejected'];
+      const stages = ['pre', 'mid', 'post'];
+      const urgencies = ['normal', 'urgent', 'very_urgent'];
+      const projects = [];
 
-        for (let i = 0; i < 15; i++) {
-          const status = statuses[Math.floor(Math.random() * statuses.length)];
-          const stage = status === 'completed' ? 'post' : stages[Math.floor(Math.random() * 3)];
-          const amount = Math.floor(Math.random() * 10000000) + 500000;
+      for (let i = 0; i < 15; i++) {
+        const status = statuses[Math.floor(Math.random() * statuses.length)];
+        const stage = status === 'completed' ? 'post' : stages[Math.floor(Math.random() * 3)];
+        const amount = Math.floor(Math.random() * 10000000) + 500000;
+        const createdAt = new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000);
 
-          projects.push({
-            id: `PRJ${String(2026001 + i).padStart(6, '0')}`,
-            name: `授信项目-${customers[i % customers.length]}`,
-            customerName: customers[i % customers.length],
-            customerType: i % 2 === 0 ? 'enterprise' : 'personal',
-            amount: amount,
-            term: [6, 12, 24, 36][Math.floor(Math.random() * 4)],
-            rate: (Math.random() * 3 + 3.5).toFixed(2),
-            guaranteeType: ['credit', 'mortgage', 'pledge', 'guarantee'][Math.floor(Math.random() * 4)],
-            status: status,
-            stage: stage,
-            stageProgress: { pre: 0, mid: 0, post: 0 },
-            remark: '',
-            createdAt: new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000).toISOString(),
-            endDate: status === 'completed' ? new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString() : null,
-            tasks: this.generateTasks(status, stage)
-          });
+        projects.push({
+          id: `PRJ${String(2026001 + i).padStart(6, '0')}`,
+          name: `授信项目-${customers[i % customers.length]}`,
+          customerName: customers[i % customers.length],
+          customerType: i % 2 === 0 ? 'enterprise' : 'personal',
+          amount: amount,
+          term: [6, 12, 24, 36][Math.floor(Math.random() * 4)],
+          rate: (Math.random() * 3 + 3.5).toFixed(2),
+          guaranteeType: ['credit', 'mortgage', 'pledge', 'guarantee'][Math.floor(Math.random() * 4)],
+          status: status,
+          stage: stage,
+          urgency: urgencies[Math.floor(Math.random() * 3)],
+          stageProgress: { pre: 0, mid: 0, post: 0 },
+          remark: '',
+          createdAt: createdAt.toISOString(),
+          endDate: status === 'completed' ? new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString() : null,
+          drawDate: stage === 'mid' || stage === 'post' ? new Date(createdAt.getTime() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : '',
+          postLoanTaskDates: this.generatePostLoanTaskDates(),
+          tasks: this.generateTasks(status, stage)
+        });
 
-          const project = projects[projects.length - 1];
-          if (stage === 'pre') project.stageProgress.pre = Math.floor(Math.random() * 100);
-          else if (stage === 'mid') { project.stageProgress.pre = 100; project.stageProgress.mid = Math.floor(Math.random() * 100); }
-          else { project.stageProgress.pre = 100; project.stageProgress.mid = 100; project.stageProgress.post = Math.floor(Math.random() * 100); }
-        }
+        const project = projects[projects.length - 1];
+        if (stage === 'pre') project.stageProgress.pre = Math.floor(Math.random() * 100);
+        else if (stage === 'mid') { project.stageProgress.pre = 100; project.stageProgress.mid = Math.floor(Math.random() * 100); }
+        else { project.stageProgress.pre = 100; project.stageProgress.mid = 100; project.stageProgress.post = Math.floor(Math.random() * 100); }
+      }
 
-        return projects;
-      },
+      return projects;
+    },
+
+    generatePostLoanTaskDates() {
+      const baseDate = new Date();
+      return [
+        new Date(baseDate.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        new Date(baseDate.getTime() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        new Date(baseDate.getTime() + 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+      ];
+    },
 
       generateTasks(status, stage) {
         const preTasks = [
@@ -1226,36 +1376,48 @@ return [
         });
       },
 
-      openProjectModal(project = null) {
-        const modal = document.getElementById('projectModal');
-        const form = document.getElementById('projectForm');
+openProjectModal(project = null) {
+    const modal = document.getElementById('projectModal');
+    const form = document.getElementById('projectForm');
 
-        this.currentSelectedCustomers = project ? [...(project.customerIds || [])] : [];
+    this.currentSelectedCustomers = project ? [...(project.customerIds || [])] : [];
 
-        if (project) {
-          document.getElementById('modalTitle').textContent = '编辑项目';
-          document.getElementById('projectCode').value = project.id;
-          document.getElementById('projectName').value = project.name;
-          document.getElementById('creditAmount').value = project.amount;
-          document.getElementById('creditTerm').value = project.term;
-          document.getElementById('interestRate').value = project.rate;
-          document.getElementById('guaranteeType').value = project.guaranteeType;
-          document.getElementById('startDate').value = project.createdAt ? project.createdAt.split('T')[0] : '';
-          document.getElementById('endDate').value = project.endDate ? project.endDate.split('T')[0] : '';
-          document.getElementById('remark').value = project.remark || '';
-          this.renderCustomerList();
-          this.updateSelectedCustomers(this.currentSelectedCustomers);
-        } else {
-          document.getElementById('modalTitle').textContent = '新建项目';
-          form.reset();
-          document.getElementById('projectCode').value = this.generateProjectCode();
-          this.currentCustomerFilter = '';
-          this.renderCustomerList();
-          this.updateSelectedCustomers([]);
-        }
+    if (project) {
+      document.getElementById('modalTitle').textContent = '编辑项目';
+      document.getElementById('projectCode').value = project.id;
+      document.getElementById('projectName').value = project.name;
+      document.getElementById('creditAmount').value = project.amount;
+      document.getElementById('creditTerm').value = project.term;
+      document.getElementById('interestRate').value = project.rate;
+      document.getElementById('guaranteeType').value = project.guaranteeType;
+      document.getElementById('startDate').value = project.createdAt ? project.createdAt.split('T')[0] : '';
+      document.getElementById('endDate').value = project.endDate ? project.endDate.split('T')[0] : '';
+      document.getElementById('remark').value = project.remark || '';
+      document.getElementById('urgency').value = project.urgency || 'normal';
+      document.getElementById('editStage').value = project.stage || 'pre';
+      document.getElementById('editStatus').value = project.status || 'pending';
+      document.getElementById('drawDate').value = project.drawDate || '';
+      const taskDates = project.postLoanTaskDates || [];
+      for (let i = 1; i <= 4; i++) {
+        const input = document.getElementById('postLoanTaskDate' + i);
+        if (input) input.value = taskDates[i - 1] || '';
+      }
+      this.renderCustomerList();
+      this.updateSelectedCustomers(this.currentSelectedCustomers);
+    } else {
+      document.getElementById('modalTitle').textContent = '新建项目';
+      form.reset();
+      document.getElementById('projectCode').value = this.generateProjectCode();
+      document.getElementById('urgency').value = 'normal';
+      document.getElementById('editStage').value = 'pre';
+      document.getElementById('editStatus').value = 'pending';
+      this.currentCustomerFilter = '';
+      this.renderCustomerList();
+      this.updateSelectedCustomers([]);
+    }
 
-        modal.classList.add('active');
-      },
+    modal.classList.add('active');
+  },
 
       currentCustomerFilter: '',
       currentSelectedCustomers: [],
@@ -1295,16 +1457,41 @@ return [
         }
       },
 
-      toggleCustomer(customerId) {
-        const idx = this.currentSelectedCustomers.indexOf(customerId);
-        if (idx >= 0) {
-          this.currentSelectedCustomers.splice(idx, 1);
-        } else {
-          this.currentSelectedCustomers.push(customerId);
+toggleCustomer(customerId) {
+    const idx = this.currentSelectedCustomers.indexOf(customerId);
+    if (idx >= 0) {
+      this.currentSelectedCustomers.splice(idx, 1);
+    } else {
+      this.currentSelectedCustomers.push(customerId);
+    }
+    this.renderCustomerList();
+    this.updateSelectedCustomers(this.currentSelectedCustomers);
+  },
+
+  togglePostLoanTaskDates() {
+    const type = document.querySelector('input[name="postLoanTaskType"]:checked').value;
+    const container = document.getElementById('postLoanTaskDatesContainer');
+    if (type === 'custom') {
+      container.style.display = 'flex';
+    } else {
+      container.style.display = 'none';
+      const baseDate = new Date();
+      let dates = [];
+      if (type === 'quarterly') {
+        for (let i = 1; i <= 4; i++) {
+          dates.push(new Date(baseDate.getTime() + i * 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
         }
-        this.renderCustomerList();
-        this.updateSelectedCustomers(this.currentSelectedCustomers);
-      },
+      } else {
+        for (let i = 1; i <= 2; i++) {
+          dates.push(new Date(baseDate.getTime() + i * 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
+        }
+      }
+      for (let i = 1; i <= 4; i++) {
+        const input = document.getElementById('postLoanTaskDate' + i);
+        if (input) input.value = dates[i - 1] || '';
+      }
+    }
+  },
 
       updateSelectedCustomers(selectedIds) {
         const container = document.getElementById('selectedCustomers');
@@ -1338,54 +1525,67 @@ return [
         document.getElementById(modalId).classList.remove('active');
       },
 
-      saveProject() {
-        const projectCode = document.getElementById('projectCode').value;
-        const projectName = document.getElementById('projectName').value;
-        const customerIds = this.currentSelectedCustomers || [];
-        const amount = parseFloat(document.getElementById('creditAmount').value);
-        const term = parseInt(document.getElementById('creditTerm').value);
-        const rate = document.getElementById('interestRate').value;
-        const guaranteeType = document.getElementById('guaranteeType').value;
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
-        const remark = document.getElementById('remark').value;
+saveProject() {
+    const projectCode = document.getElementById('projectCode').value;
+    const projectName = document.getElementById('projectName').value;
+    const customerIds = this.currentSelectedCustomers || [];
+    const amount = parseFloat(document.getElementById('creditAmount').value);
+    const term = parseInt(document.getElementById('creditTerm').value);
+    const rate = document.getElementById('interestRate').value;
+    const guaranteeType = document.getElementById('guaranteeType').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const remark = document.getElementById('remark').value;
+    const urgency = document.getElementById('urgency').value;
+    const editStage = document.getElementById('editStage').value;
+    const editStatus = document.getElementById('editStatus').value;
+    const drawDate = document.getElementById('drawDate').value;
+    const postLoanTaskDates = [
+      document.getElementById('postLoanTaskDate1').value,
+      document.getElementById('postLoanTaskDate2').value,
+      document.getElementById('postLoanTaskDate3').value,
+      document.getElementById('postLoanTaskDate4').value
+    ].filter(d => d);
 
-        if (!projectName || customerIds.length === 0 || !amount) {
-          alert('请填写必填字段');
-          return;
-        }
+    if (!projectName || customerIds.length === 0 || !amount) {
+      alert('请填写必填字段');
+      return;
+    }
 
-        const customerNames = this.data.customers.filter(c => customerIds.includes(c.id)).map(c => c.name);
-        const existingIndex = this.data.projects.findIndex(p => p.id === projectCode);
+    const customerNames = this.data.customers.filter(c => customerIds.includes(c.id)).map(c => c.name);
+    const existingIndex = this.data.projects.findIndex(p => p.id === projectCode);
 
-        const projectData = {
-          id: projectCode,
-          name: projectName,
-          customerIds: customerIds,
-          customerNames: customerNames,
-          amount: amount,
-          term: term,
-          rate: rate,
-          guaranteeType: guaranteeType,
-          status: existingIndex >= 0 ? this.data.projects[existingIndex].status : 'pending',
-          stage: existingIndex >= 0 ? this.data.projects[existingIndex].stage : 'pre',
-          stageProgress: existingIndex >= 0 ? this.data.projects[existingIndex].stageProgress : { pre: 0, mid: 0, post: 0 },
-          remark: remark,
-          createdAt: startDate ? new Date(startDate).toISOString() : (existingIndex >= 0 ? this.data.projects[existingIndex].createdAt : new Date().toISOString()),
-          endDate: endDate ? new Date(endDate).toISOString() : null,
-          tasks: existingIndex >= 0 ? this.data.projects[existingIndex].tasks : this.generateTasks('pending', 'pre')
-        };
+    const projectData = {
+      id: projectCode,
+      name: projectName,
+      customerIds: customerIds,
+      customerNames: customerNames,
+      amount: amount,
+      term: term,
+      rate: rate,
+      guaranteeType: guaranteeType,
+      status: editStatus,
+      stage: editStage,
+      urgency: urgency,
+      stageProgress: existingIndex >= 0 ? this.data.projects[existingIndex].stageProgress : { pre: 0, mid: 0, post: 0 },
+      remark: remark,
+      createdAt: startDate ? new Date(startDate).toISOString() : (existingIndex >= 0 ? this.data.projects[existingIndex].createdAt : new Date().toISOString()),
+      endDate: endDate ? new Date(endDate).toISOString() : null,
+      drawDate: drawDate,
+      postLoanTaskDates: postLoanTaskDates,
+      tasks: existingIndex >= 0 ? this.data.projects[existingIndex].tasks : this.generateTasks('pending', 'pre')
+    };
 
-        if (existingIndex >= 0) {
-          this.data.projects[existingIndex] = projectData;
-        } else {
-          this.data.projects.unshift(projectData);
-        }
+    if (existingIndex >= 0) {
+      this.data.projects[existingIndex] = projectData;
+    } else {
+      this.data.projects.unshift(projectData);
+    }
 
-        this.saveData();
-        this.closeModal('projectModal');
-        this.render();
-      },
+    this.saveData();
+    this.closeModal('projectModal');
+    this.render();
+  },
 
       getFilteredProjects() {
         let projects = this.data.projects;
@@ -1452,9 +1652,22 @@ return [
         this.render();
       },
 
-      formatAmount(amount) {
-        return new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY', minimumFractionDigits: 0 }).format(amount);
-      },
+formatAmount(amount) {
+    return new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY', minimumFractionDigits: 0 }).format(amount);
+  },
+
+  formatAmountInWan(amount) {
+    return (amount / 10000).toFixed(2) + '万元';
+  },
+
+  getUrgencyText(urgency) {
+    const texts = { normal: '普通', urgent: '紧急', very_urgent: '非常紧急' };
+    return texts[urgency] || '普通';
+  },
+
+  getUrgencyClass(urgency) {
+    return urgency === 'very_urgent' ? 'urgency-very-urgent' : (urgency === 'urgent' ? 'urgency-urgent' : 'urgency-normal');
+  },
 
       formatDate(dateStr) {
         return new Date(dateStr).toLocaleDateString('zh-CN');
@@ -1498,192 +1711,221 @@ return [
         this.bindPageEvents();
       },
 
-      renderDashboard() {
-        const stats = this.getStats();
-        const recentProjects = this.getFilteredProjects().slice(0, 5);
-        const pendingTasks = this.data.projects.flatMap(p => p.tasks.filter(t => !t.completed)).slice(0, 8);
+renderDashboard() {
+    const stats = this.getStats();
+    const recentProjects = this.getFilteredProjects().slice(0, 5);
+    const pendingTasks = this.data.projects.flatMap(p => p.tasks.filter(t => !t.completed)).slice(0, 8);
 
-        return `
-          <div class="stats-grid fade-in">
-            <div class="stat-card">
-              <div class="stat-icon primary">📁</div>
-              <div class="stat-value">${stats.total}</div>
-              <div class="stat-label">总项目数</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon warning">⏳</div>
-              <div class="stat-value">${stats.pending + stats.processing}</div>
-              <div class="stat-label">待处理项目</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon accent">💰</div>
-              <div class="stat-value">${(stats.totalAmount / 10000).toFixed(0)}万</div>
-              <div class="stat-label">申请总额</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon danger">✓</div>
-              <div class="stat-value">${stats.passRate}%</div>
-              <div class="stat-label">通过率</div>
-            </div>
-          </div>
+    return `
+    <div class="stats-grid fade-in">
+      <div class="stat-card">
+        <div class="stat-icon primary">📁</div>
+        <div class="stat-value">${stats.total}</div>
+        <div class="stat-label">总项目数</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon warning">⏳</div>
+        <div class="stat-value">${stats.pending + stats.processing}</div>
+        <div class="stat-label">待处理项目</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon accent">💰</div>
+        <div class="stat-value">${(stats.totalAmount / 10000).toFixed(0)}万</div>
+        <div class="stat-label">申请总额</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon danger">✓</div>
+        <div class="stat-value">${stats.passRate}%</div>
+        <div class="stat-label">通过率</div>
+      </div>
+    </div>
 
-          <div class="section fade-in">
-            <div class="section-header">
-              <h3 class="section-title">最近项目</h3>
-              <button class="btn btn-secondary" onclick="App.navigateTo('projects')">查看全部</button>
-            </div>
-            <div class="section-body">
-              <table class="projects-table">
-                <thead>
-                  <tr>
-                    <th>项目编号</th>
-                    <th>项目名称</th>
-                    <th>客户名称</th>
-                    <th>授信金额</th>
-                    <th>当前阶段</th>
-                    <th>状态</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${recentProjects.map(p => `
-                    <tr>
-                      <td>${p.id}</td>
-                      <td><span class="project-name" onclick="App.showProjectDetail('${p.id}')">${p.name}</span></td>
-                      <td style="white-space:nowrap;">${(p.customerNames || []).map(n => `<div>${n}</div>`).join('')}</td>
-                      <td class="amount">${this.formatAmount(p.amount)}</td>
-                      <td><span class="stage-badge ${p.stage}">${this.getStageText(p.stage)}</span></td>
-                      <td><span class="status-badge ${p.status}">${this.getStatusText(p.status)}</span></td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
-            </div>
-          </div>
+    <div class="section fade-in">
+      <div class="section-header">
+        <h3 class="section-title">最近项目</h3>
+        <button class="btn btn-secondary" onclick="App.navigateTo('projects')">查看全部</button>
+      </div>
+      <div class="section-body">
+        <table class="projects-table">
+          <thead>
+            <tr>
+              <th>项目编号</th>
+              <th>项目名称</th>
+              <th>客户名称</th>
+              <th>授信金额</th>
+              <th>紧急度</th>
+              <th>当前阶段</th>
+              <th>状态</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${recentProjects.map(p => `
+            <tr>
+              <td>${p.id}</td>
+              <td><span class="project-name" onclick="App.showProjectDetail('${p.id}')">${p.name}</span></td>
+              <td style="white-space:nowrap;">${(p.customerNames || []).map(n => `<div>${n}</div>`).join('')}</td>
+              <td class="amount">${this.formatAmountInWan(p.amount)}</td>
+              <td><span class="urgency-badge ${this.getUrgencyClass(p.urgency)}">${this.getUrgencyText(p.urgency)}</span></td>
+              <td><span class="stage-badge ${p.stage}">${this.getStageText(p.stage)}</span></td>
+              <td><span class="status-badge ${p.status}">${this.getStatusText(p.status)}</span></td>
+            </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-          <div class="section fade-in">
-            <div class="section-header">
-              <h3 class="section-title">待办任务</h3>
+    <div class="section fade-in">
+      <div class="section-header">
+        <h3 class="section-title">待办任务</h3>
+      </div>
+      <div class="section-body">
+        ${pendingTasks.length > 0 ? `
+        <ul class="task-list">
+          ${pendingTasks.map(t => `
+          <li class="task-item">
+            <div class="task-checkbox" onclick="App.toggleTask('${t.id}')"></div>
+            <div class="task-content">
+              <div class="task-title">${t.title}</div>
+              <div class="task-meta">项目: ${this.data.projects.find(p => p.tasks.some(pt => pt.id === t.id))?.name}</div>
             </div>
-            <div class="section-body">
-              ${pendingTasks.length > 0 ? `
-                <ul class="task-list">
-                  ${pendingTasks.map(t => `
-                    <li class="task-item">
-                      <div class="task-checkbox" onclick="App.toggleTask('${t.id}')"></div>
-                      <div class="task-content">
-                        <div class="task-title">${t.title}</div>
-                        <div class="task-meta">项目: ${this.data.projects.find(p => p.tasks.some(pt => pt.id === t.id))?.name}</div>
-                      </div>
-                    </li>
-                  `).join('')}
-                </ul>
-              ` : `
-                <div class="empty-state">
-                  <div class="empty-icon">✅</div>
-                  <p>暂无数待办任务</p>
-                </div>
-              `}
-            </div>
-          </div>
-        `;
-      },
+          </li>
+          `).join('')}
+        </ul>
+        ` : `
+        <div class="empty-state">
+          <div class="empty-icon">✅</div>
+          <p>暂无数待办任务</p>
+        </div>
+        `}
+      </div>
+    </div>
+    `;
+  },
 
 renderProjects() {
-const projects = this.getFilteredProjects();
-const stageFilter = this.data.filterStage;
-const stageStats = this.getStageStats();
-const stageNames = { pre: '贷前调查', mid: '贷中审批', post: '贷后管理' };
-const postLoanCalendar = stageFilter === 'post' ? this.renderPostLoanCalendar() : '';
+    const projects = this.getFilteredProjects();
+    const stageFilter = this.data.filterStage;
+    const stageStats = this.getStageStats();
+    const stageNames = { pre: '贷前调查', mid: '贷中审批', post: '贷后管理' };
+    const postLoanCalendar = stageFilter === 'post' ? this.renderPostLoanCalendar() : '';
 
-return `
-${stageFilter ? `
-<div class="stats-grid fade-in" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
-<div class="stat-card">
-<div class="stat-icon primary">📁</div>
-<div class="stat-value">${stageStats[stageFilter].total}</div>
-<div class="stat-label">${stageNames[stageFilter]} - 项目数</div>
-</div>
-<div class="stat-card">
-<div class="stat-icon warning">⏳</div>
-<div class="stat-value">${stageStats[stageFilter].pending}</div>
-<div class="stat-label">待处理</div>
-</div>
-<div class="stat-card">
-<div class="stat-icon accent">✓</div>
-<div class="stat-value">${stageStats[stageFilter].completed}</div>
-<div class="stat-label">已完成</div>
-</div>
-</div>
-${postLoanCalendar}
-` : ''}
-<div class="filter-bar fade-in">
-            <select class="filter-select" id="statusFilter" onchange="App.filterByStatus()">
-              <option value="">全部状态</option>
-              <option value="pending">待处理</option>
-              <option value="processing">审批中</option>
-              <option value="completed">已完成</option>
-              <option value="rejected">已拒绝</option>
-            </select>
-            <select class="filter-select" id="stageFilter" onchange="App.filterByStage()">
-              <option value="">全部阶段</option>
-              <option value="pre">贷前调查</option>
-              <option value="mid">贷中审批</option>
-              <option value="post">贷后管理</option>
-            </select>
-            ${stageFilter ? `<button class="btn btn-secondary" onclick="App.clearStageFilter()">清除筛选</button>` : ''}
-            <button class="btn btn-primary" onclick="App.exportProjectsXlsx()">导出Excel</button>
-          </div>
+    return `
+      ${stageFilter ? `
+      <div class="stats-grid fade-in" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
+        <div class="stat-card">
+          <div class="stat-icon primary">📁</div>
+          <div class="stat-value">${stageStats[stageFilter].total}</div>
+          <div class="stat-label">${stageNames[stageFilter]} - 项目数</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon warning">⏳</div>
+          <div class="stat-value">${stageStats[stageFilter].pending}</div>
+          <div class="stat-label">待处理</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon accent">✓</div>
+          <div class="stat-value">${stageStats[stageFilter].completed}</div>
+          <div class="stat-label">已完成</div>
+        </div>
+      </div>
+      ${postLoanCalendar}
+      ` : ''}
+    <div class="filter-bar fade-in">
+      <select class="filter-select" id="statusFilter" onchange="App.filterByStatus()">
+        <option value="">全部状态</option>
+        <option value="pending">待处理</option>
+        <option value="processing">审批中</option>
+        <option value="completed">已完成</option>
+        <option value="rejected">已拒绝</option>
+      </select>
+      <select class="filter-select" id="stageFilter" onchange="App.filterByStage()">
+        <option value="">全部阶段</option>
+        <option value="pre">贷前调查</option>
+        <option value="mid">贷中审批</option>
+        <option value="post">贷后管理</option>
+      </select>
+      ${stageFilter ? `<button class="btn btn-secondary" onclick="App.clearStageFilter()">清除筛选</button>` : ''}
+      <button class="btn btn-primary" onclick="App.exportProjectsXlsx()">导出Excel</button>
+    </div>
 
-          <div class="section fade-in">
-            <div class="section-body" style="padding: 0;">
-              <table class="projects-table">
-                <thead>
-                  <tr>
-                    <th>项目编号</th>
-                    <th>项目名称</th>
-                    <th>客户名称</th>
-                    <th>授信金额</th>
-                    <th>当前阶段</th>
-                    <th>状态</th>
-                    <th>开始时间</th>
-                    <th>结束时间</th>
-                    <th>项目耗时</th>
-                    <th>操作</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${projects.length > 0 ? projects.map(p => `
-                    <tr>
-                      <td>${p.id}</td>
-                      <td><span class="project-name" onclick="App.showProjectDetail('${p.id}')">${p.name}</span></td>
-                      <td style="white-space:nowrap;">${(p.customerNames || []).map(n => `<div>${n}</div>`).join('')}</td>
-                      <td class="amount">${this.formatAmount(p.amount)}</td>
-                      <td><span class="stage-badge ${p.stage}">${this.getStageText(p.stage)}</span></td>
-                      <td><span class="status-badge ${p.status}">${this.getStatusText(p.status)}</span></td>
-                      <td>${this.formatDate(p.createdAt)}</td>
-                      <td>${p.endDate ? this.formatDate(p.endDate) : (p.status === 'completed' ? this.formatDate(new Date().toISOString()) : '-')}</td>
-                      <td>${this.renderDurationBar(p)}</td>
-                      <td>
-                        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="App.editProject('${p.id}')">编辑</button>
-                        <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px; margin-left: 8px;" onclick="App.deleteProject('${p.id}')">删除</button>
-                      </td>
-                    </tr>
-                  `).join('') : `
-                    <tr>
-                      <td colspan="9">
-                        <div class="empty-state">
-                          <div class="empty-icon">📁</div>
-                          <p>暂无数项目数据</p>
-                        </div>
-                      </td>
-                    </tr>
-                  `}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        `;
-      },
+    <div class="section fade-in">
+      <div class="section-body" style="padding: 0;">
+        <table class="projects-table">
+          <thead>
+            <tr>
+              <th>项目编号</th>
+              <th>项目名称</th>
+              <th>客户名称</th>
+              <th>授信金额</th>
+              <th>紧急度</th>
+              <th>当前阶段</th>
+              <th>状态</th>
+              <th>开始时间</th>
+              <th>结束时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${projects.length > 0 ? projects.map(p => {
+    const start = new Date(p.createdAt).getTime();
+    const end = p.endDate ? new Date(p.endDate).getTime() : Date.now();
+    const days = Math.floor((end - start) / (1000 * 60 * 60 * 24));
+    const maxDays = p.term * 30;
+    const percent = Math.min((days / maxDays) * 100, 100);
+    const r = Math.min(255, Math.floor((percent / 100) * 255));
+    const g = Math.min(255, Math.floor((1 - percent / 100) * 200 + 50));
+    const color = `rgb(${r}, ${g}, 80)`;
+    const color2 = p.endDate ? '#38a169' : color;
+    const currentNode = p.stage === 'pre' ? '客户尽职调查' : (p.stage === 'mid' ? '初审评估' : '首次检查');
+    return `
+            <tr>
+              <td>${p.id}</td>
+              <td><span class="project-name" onclick="App.showProjectDetail('${p.id}')">${p.name}</span></td>
+              <td style="white-space:nowrap;">${(p.customerNames || []).map(n => `<div>${n}</div>`).join('')}</td>
+              <td class="amount">${this.formatAmountInWan(p.amount)}</td>
+              <td><span class="urgency-badge ${this.getUrgencyClass(p.urgency)}">${this.getUrgencyText(p.urgency)}</span></td>
+              <td><span class="stage-badge ${p.stage}">${this.getStageText(p.stage)}</span></td>
+              <td><span class="status-badge ${p.status}">${this.getStatusText(p.status)}</span></td>
+              <td>${this.formatDate(p.createdAt)}</td>
+              <td>${p.endDate ? this.formatDate(p.endDate) : (p.status === 'completed' ? this.formatDate(new Date().toISOString()) : '-')}</td>
+              <td>
+                <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="App.editProject('${p.id}')">编辑</button>
+                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px; margin-left: 8px;" onclick="App.deleteProject('${p.id}')">删除</button>
+              </td>
+            </tr>
+            <tr class="project-row-second">
+              <td colspan="2"></td>
+              <td colspan="5">
+                <div class="duration-bar-container">
+                  <span style="white-space:nowrap;">项目耗时: ${days}天</span>
+                  <div class="duration-bar">
+                    <div class="duration-bar-fill" style="width:${percent}%;background:${color2};"></div>
+                  </div>
+                  <span>${percent.toFixed(0)}%</span>
+                </div>
+              </td>
+              <td colspan="3">
+                <span class="current-node">📍 当前节点: ${currentNode}</span>
+              </td>
+            </tr>
+            `;
+    }).join('') : `
+            <tr>
+              <td colspan="9">
+                <div class="empty-state">
+                  <div class="empty-icon">📁</div>
+                  <p>暂无数项目数据</p>
+                </div>
+              </td>
+            </tr>
+            `}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    `;
+  },
 
 renderTasks() {
 const projectsWithTasks = this.data.projects.map(p => {
@@ -1773,66 +2015,66 @@ ${t.completed ? '✓' : ''}
 `;
       },
 
-      renderStatistics() {
-        const stats = this.getStats();
-        const stageCounts = { pre: 0, mid: 0, post: 0 };
-        this.data.projects.forEach(p => stageCounts[p.stage]++);
+renderStatistics() {
+    const stats = this.getStats();
+    const stageCounts = { pre: 0, mid: 0, post: 0 };
+    this.data.projects.forEach(p => stageCounts[p.stage]++);
 
-        const total = stats.total || 1;
+    const total = stats.total || 1;
 
-        const statusData = [
-          { key: 'pending', label: '待处理', count: stats.pending, color: '#dd6b20' },
-          { key: 'processing', label: '审批中', count: stats.processing, color: '#1a365d' },
-          { key: 'completed', label: '已完成', count: stats.completed, color: '#38a169' },
-          { key: 'rejected', label: '已拒绝', count: stats.rejected, color: '#e53e3e' }
-        ];
+    const statusData = [
+      { key: 'pending', label: '待处理', count: stats.pending, color: '#dd6b20' },
+      { key: 'processing', label: '审批中', count: stats.processing, color: '#1a365d' },
+      { key: 'completed', label: '已完成', count: stats.completed, color: '#38a169' },
+      { key: 'rejected', label: '已拒绝', count: stats.rejected, color: '#e53e3e' }
+    ];
 
-        const stageData = [
-          { key: 'pre', label: '贷前调查', count: stageCounts.pre, color: '#2b6cb0' },
-          { key: 'mid', label: '贷中审批', count: stageCounts.mid, color: '#b7791f' },
-          { key: 'post', label: '贷后管理', count: stageCounts.post, color: '#276749' }
-        ];
+    const stageData = [
+      { key: 'pre', label: '贷前调查', count: stageCounts.pre, color: '#2b6cb0' },
+      { key: 'mid', label: '贷中审批', count: stageCounts.mid, color: '#b7791f' },
+      { key: 'post', label: '贷后管理', count: stageCounts.post, color: '#276749' }
+    ];
 
-        const buildPie = (data) => {
-          let gradient = '';
-          let current = 0;
-          data.forEach((item, i) => {
-            if (item.count > 0) {
-              const start = current;
-              current += (item.count / total) * 360;
-              const end = current;
-              gradient += (gradient ? ', ' : '') + item.color + ' ' + start + 'deg ' + end + 'deg';
-            }
-          });
-          return gradient || '#e2e8f0 0deg 360deg';
-        };
+    const buildPie = (data) => {
+      let gradient = '';
+      let current = 0;
+      data.forEach((item, i) => {
+        if (item.count > 0) {
+          const start = current;
+          current += (item.count / total) * 360;
+          const end = current;
+          gradient += (gradient ? ', ' : '') + item.color + ' ' + start + 'deg ' + end + 'deg';
+        }
+      });
+      return gradient || '#e2e8f0 0deg 360deg';
+    };
 
-        const statusGradient = buildPie(statusData);
-        const stageGradient = buildPie(stageData);
+    const statusGradient = buildPie(statusData);
+    const stageGradient = buildPie(stageData);
 
-        return `
-          <div class="stats-grid fade-in">
-            <div class="stat-card">
-              <div class="stat-icon primary">📁</div>
-              <div class="stat-value">${stats.total}</div>
-              <div class="stat-label">总项目数</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon accent">💰</div>
-              <div class="stat-value">${this.formatAmount(stats.totalAmount)}</div>
-              <div class="stat-label">申请总额</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon primary">✓</div>
-              <div class="stat-value">${this.formatAmount(stats.approvedAmount)}</div>
-              <div class="stat-label">已放款总额</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon danger">📊</div>
-              <div class="stat-value">${stats.passRate}%</div>
-              <div class="stat-label">项目通过率</div>
-            </div>
-          </div>
+    return `
+    <div class="stats-grid fade-in">
+      <div class="stat-card">
+        <div class="stat-icon primary">📁</div>
+        <div class="stat-value">${stats.total}</div>
+        <div class="stat-label">总项目数</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon accent">💰</div>
+        <div class="stat-value">${(stats.totalAmount / 10000).toFixed(0)}万</div>
+        <div class="stat-label">申请总额</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon primary">✓</div>
+        <div class="stat-value">${(stats.approvedAmount / 10000).toFixed(0)}万</div>
+        <div class="stat-label">已放款总额</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon danger">📊</div>
+        <div class="stat-value">${stats.passRate}%</div>
+        <div class="stat-label">项目通过率</div>
+      </div>
+    </div>
 
           <div class="detail-grid fade-in">
             <div class="card" style="text-align:center;">
@@ -2207,103 +2449,124 @@ this.data.customers.push(customerData);
         `;
       },
 
-      showProjectDetail(id) {
-        const project = this.data.projects.find(p => p.id === id);
-        if (!project) return;
+showProjectDetail(id) {
+    const project = this.data.projects.find(p => p.id === id);
+    if (!project) return;
 
-        const detailContent = `
-          <div class="flow-container">
-            <div class="flow-stage ${project.stageProgress.pre === 100 ? 'completed' : project.stage === 'pre' ? 'active' : ''}">
-              <div class="flow-icon">🔍</div>
-              <div class="flow-label">贷前调查</div>
-              <div class="flow-status">${project.stageProgress.pre === 100 ? '已完成' : project.stageProgress.pre + '%'}</div>
-            </div>
-            <div class="flow-stage ${project.stageProgress.mid === 100 ? 'completed' : project.stage === 'mid' ? 'active' : ''}">
-              <div class="flow-icon">📋</div>
-              <div class="flow-label">���中审批</div>
-              <div class="flow-status">${project.stageProgress.mid === 100 ? '已完成' : project.stageProgress.mid + '%'}</div>
-            </div>
-            <div class="flow-stage ${project.stageProgress.post === 100 ? 'completed' : project.stage === 'post' ? 'active' : ''}">
-              <div class="flow-icon">📊</div>
-              <div class="flow-label">贷后管理</div>
-              <div class="flow-status">${project.stageProgress.post === 100 ? '已完成' : project.stageProgress.post + '%'}</div>
-            </div>
+    const postLoanDates = project.postLoanTaskDates || [];
+    const detailContent = `
+    <div class="flow-container">
+      <div class="flow-stage ${project.stageProgress.pre === 100 ? 'completed' : project.stage === 'pre' ? 'active' : ''}">
+        <div class="flow-icon">🔍</div>
+        <div class="flow-label">贷前调查</div>
+        <div class="flow-status">${project.stageProgress.pre === 100 ? '已完成' : project.stageProgress.pre + '%'}</div>
+      </div>
+      <div class="flow-stage ${project.stageProgress.mid === 100 ? 'completed' : project.stage === 'mid' ? 'active' : ''}">
+        <div class="flow-icon">📋</div>
+        <div class="flow-label">贷中审批</div>
+        <div class="flow-status">${project.stageProgress.mid === 100 ? '已完成' : project.stageProgress.mid + '%'}</div>
+      </div>
+      <div class="flow-stage ${project.stageProgress.post === 100 ? 'completed' : project.stage === 'post' ? 'active' : ''}">
+        <div class="flow-icon">📊</div>
+        <div class="flow-label">贷后管理</div>
+        <div class="flow-status">${project.stageProgress.post === 100 ? '已完成' : project.stageProgress.post + '%'}</div>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <div>
+        <h4 style="margin-bottom: 16px; font-size: 14px; color: var(--text-light);">基本信息</h4>
+        <div class="detail-item">
+          <div class="detail-label">项目编号</div>
+          <div class="detail-value">${project.id}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">项目名称</div>
+          <div class="detail-value">${project.name}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">客户</div>
+          <div class="detail-value">${(project.customerNames || []).join(', ')}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">创建时间</div>
+          <div class="detail-value">${this.formatDate(project.createdAt)}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">紧急度</div>
+          <div class="detail-value"><span class="urgency-badge ${this.getUrgencyClass(project.urgency)}">${this.getUrgencyText(project.urgency)}</span></div>
+        </div>
+      </div>
+      <div>
+        <h4 style="margin-bottom: 16px; font-size: 14px; color: var(--text-light);">授信信息</h4>
+        <div class="detail-item">
+          <div class="detail-label">授信金额</div>
+          <div class="detail-value amount">${this.formatAmountInWan(project.amount)}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">授信期限</div>
+          <div class="detail-value">${project.term}个月</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">利率</div>
+          <div class="detail-value">${project.rate}%</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">担保方式</div>
+          <div class="detail-value">${this.getGuaranteeTypeText(project.guaranteeType)}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">状态</div>
+          <div class="detail-value"><span class="status-badge ${project.status}">${this.getStatusText(project.status)}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 24px;">
+      <h4 style="margin-bottom: 16px; font-size: 14px; color: var(--text-light);">时间信息</h4>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="detail-label">动拨日期</div>
+          <div class="detail-value">${project.drawDate || '待确定'}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">贷后任务日期</div>
+          <div class="detail-value">
+            ${postLoanDates.length > 0 ? postLoanDates.map((d, i) => `<span style="margin-right:8px;">第${i+1}次: ${d}</span>`).join('<br>') : '待设置'}
           </div>
+        </div>
+      </div>
+    </div>
 
-          <div class="detail-grid">
-            <div>
-              <h4 style="margin-bottom: 16px; font-size: 14px; color: var(--text-light);">基本信息</h4>
-              <div class="detail-item">
-                <div class="detail-label">项目编号</div>
-                <div class="detail-value">${project.id}</div>
-              </div>
-              <div class="detail-item">
-                <div class="detail-label">项目名称</div>
-                <div class="detail-value">${project.name}</div>
-              </div>
-              <div class="detail-item">
-                <div class="detail-label">客户</div>
-                <div class="detail-value">${(project.customerNames || []).join(', ')}</div>
-              </div>
-              <div class="detail-item">
-                <div class="detail-label">创建时间</div>
-                <div class="detail-value">${this.formatDate(project.createdAt)}</div>
-              </div>
-            </div>
-            <div>
-              <h4 style="margin-bottom: 16px; font-size: 14px; color: var(--text-light);">授信信息</h4>
-              <div class="detail-item">
-                <div class="detail-label">授信金额</div>
-                <div class="detail-value amount">${this.formatAmount(project.amount)}</div>
-              </div>
-              <div class="detail-item">
-                <div class="detail-label">授信期限</div>
-                <div class="detail-value">${project.term}个月</div>
-              </div>
-              <div class="detail-item">
-                <div class="detail-label">利率</div>
-                <div class="detail-value">${project.rate}%</div>
-              </div>
-              <div class="detail-item">
-                <div class="detail-label">担保方式</div>
-                <div class="detail-value">${this.getGuaranteeTypeText(project.guaranteeType)}</div>
-              </div>
-              <div class="detail-item">
-                <div class="detail-label">状态</div>
-                <div class="detail-value"><span class="status-badge ${project.status}">${this.getStatusText(project.status)}</span></div>
-              </div>
-            </div>
+    <div style="margin-top: 24px;">
+      <h4 style="margin-bottom: 16px; font-size: 14px; color: var(--text-light);">任务清单</h4>
+      <ul class="task-list">
+        ${[...project.tasks.filter(t => !t.completed), ...project.tasks.filter(t => t.completed)].map(t => {
+    const taskCustomer = t.customerId ? this.data.customers.find(c => c.id === t.customerId) : null;
+    const customerLabel = taskCustomer ? `<span style="font-size:11px;color:var(--text-light);margin-left:8px;">[${taskCustomer.name}${taskCustomer.customerNo ? ' ' + taskCustomer.customerNo : ''}]</span>` : '';
+    return `
+        <li class="task-item">
+          <div class="task-checkbox ${t.completed ? 'checked' : ''}" onclick="App.toggleTask('${t.id}', '${project.id}')">
+            ${t.completed ? '✓' : ''}
           </div>
-
-<div style="margin-top: 24px;">
-<h4 style="margin-bottom: 16px; font-size: 14px; color: var(--text-light);">任务清单</h4>
-<ul class="task-list">
-${[...project.tasks.filter(t => !t.completed), ...project.tasks.filter(t => t.completed)].map(t => {
-const taskCustomer = t.customerId ? this.data.customers.find(c => c.id === t.customerId) : null;
-const customerLabel = taskCustomer ? `<span style="font-size:11px;color:var(--text-light);margin-left:8px;">[${taskCustomer.name}${taskCustomer.customerNo ? ' ' + taskCustomer.customerNo : ''}]</span>` : '';
-return `
-<li class="task-item">
-<div class="task-checkbox ${t.completed ? 'checked' : ''}" onclick="App.toggleTask('${t.id}', '${project.id}')">
-${t.completed ? '✓' : ''}
-</div>
-<div class="task-content">
-<div class="task-title ${t.completed ? 'checked' : ''}">${t.title}${customerLabel}</div>
-</div>
-</li>
-`;
-}).join('')}
-</ul>
-</div>
-
-          <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end;">
-            <button class="btn btn-secondary" onclick="App.editProject('${project.id}'); App.closeModal('detailModal');">编辑项目</button>
-            ${project.status !== 'completed' ? `<button class="btn btn-primary" onclick="App.updateProjectStatus('${project.id}')">推进流程</button>` : ''}
+          <div class="task-content">
+            <div class="task-title ${t.completed ? 'checked' : ''}">${t.title}${customerLabel}</div>
           </div>
+        </li>
         `;
+    }).join('')}
+      </ul>
+    </div>
 
-        document.getElementById('detailContent').innerHTML = detailContent;
-        document.getElementById('detailModal').classList.add('active');
-      },
+    <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end;">
+      <button class="btn btn-secondary" onclick="App.editProject('${project.id}'); App.closeModal('detailModal');">编辑项目</button>
+      ${project.status !== 'completed' ? `<button class="btn btn-primary" onclick="App.updateProjectStatus('${project.id}')">推进流程</button>` : ''}
+    </div>
+    `;
+
+    document.getElementById('detailContent').innerHTML = detailContent;
+    document.getElementById('detailModal').classList.add('active');
+  },
 
       editProject(id) {
         const project = this.data.projects.find(p => p.id === id);
@@ -2392,38 +2655,42 @@ ${t.completed ? '✓' : ''}
         URL.revokeObjectURL(url);
       },
 
-      exportProjectsXlsx() {
-        const projects = this.getFilteredProjects();
-        const headers = ['项目编号', '项目名称', '客户', '授信金额', '授信期限', '利率', '担保方式', '当前阶段', '状态', '创建时间'];
-        const escape = (v) => {
-          const s = String(v);
-          return s.includes(',') || s.includes('"') ? `"${s.replace(/"/g, '""')}"` : s;
-        };
-        const rows = [headers.map(escape).join(',')];
-        projects.forEach(p => {
-          const row = [
-            escape(p.id),
-            escape(p.name),
-            escape((p.customerNames || []).join('; ')),
-            escape(p.amount),
-            escape(p.term + '个月'),
-            escape(p.rate + '%'),
-            escape(this.getGuaranteeTypeText(p.guaranteeType)),
-            escape(this.getStageText(p.stage)),
-            escape(this.getStatusText(p.status)),
-            escape(this.formatDate(p.createdAt))
-          ].join(',');
-          rows.push(row);
-        });
-        const csv = rows.join('\n');
-        const blob = new Blob(['\ufeff' + csv], { type: 'application/vnd.ms-excel' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `信贷项目-${new Date().toISOString().split('T')[0]}.xls`;
-        a.click();
-        URL.revokeObjectURL(url);
-      },
+exportProjectsXlsx() {
+    const projects = this.getFilteredProjects();
+    const headers = ['项目编号', '项目名称', '客户', '授信金额(万元)', '紧急度', '授信期限', '利率', '担保方式', '当前阶段', '状态', '创建时间', '动拨日期', '贷后任务日期'];
+    const escape = (v) => {
+      const s = String(v);
+      return s.includes(',') || s.includes('"') ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const rows = [headers.map(escape).join(',')];
+    projects.forEach(p => {
+      const postLoanDates = (p.postLoanTaskDates || []).join('; ');
+      const row = [
+        escape(p.id),
+        escape(p.name),
+        escape((p.customerNames || []).join('; ')),
+        escape((p.amount / 10000).toFixed(2)),
+        escape(this.getUrgencyText(p.urgency)),
+        escape(p.term + '个月'),
+        escape(p.rate + '%'),
+        escape(this.getGuaranteeTypeText(p.guaranteeType)),
+        escape(this.getStageText(p.stage)),
+        escape(this.getStatusText(p.status)),
+        escape(this.formatDate(p.createdAt)),
+        escape(p.drawDate || ''),
+        escape(postLoanDates)
+      ].join(',');
+      rows.push(row);
+    });
+    const csv = rows.join('\n');
+    const blob = new Blob(['\ufeff' + csv], { type: 'application/vnd.ms-excel' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `信贷项目-${new Date().toISOString().split('T')[0]}.xls`;
+    a.click();
+    URL.revokeObjectURL(url);
+  },
 
       importData() {
         const input = document.createElement('input');
