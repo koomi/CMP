@@ -1089,17 +1089,17 @@
         localStorage.setItem('creditDeposits', JSON.stringify(this.data.deposits));
       },
 
-      generateSampleCustomers() {
-        return [
-          { id: 'C001', name: '北京创新科技有限公司', type: 'enterprise', contact: '张总', phone: '13800138000', address: '北京市朝阳区' },
-          { id: 'C002', name: '上海国际贸易集团', type: 'enterprise', contact: '李经理', phone: '13800138001', address: '上海市浦东新区' },
-          { id: 'C003', name: '深圳智能制造企业', type: 'enterprise', contact: '王总', phone: '13800138002', address: '深圳市南山区' },
-          { id: 'C004', name: '广州物流运输公司', type: 'enterprise', contact: '刘总', phone: '13800138003', address: '广州市天河区' },
-          { id: 'C005', name: '杭州电子商务', type: 'enterprise', contact: '陈总', phone: '13800138004', address: '杭州市滨江区' },
-          { id: 'C006', name: '张三', type: 'personal', phone: '13900139000' },
-          { id: 'C007', name: '李四', type: 'personal', phone: '13900139001' }
-        ];
-      },
+generateSampleCustomers() {
+return [
+{ id: 'C001', customerNo: '20260001', name: '北京创新科技有限公司', accounts: ['6222021100012345678', '6222021100012345679'], type: 'enterprise', contact: '张总', phone: '13800138000', address: '北京市朝阳区' },
+{ id: 'C002', customerNo: '20260002', name: '上海国际贸易集团', accounts: ['6222021100012345680'], type: 'enterprise', contact: '李经理', phone: '13800138001', address: '上海市浦东新区' },
+{ id: 'C003', customerNo: '20260003', name: '深圳智能制造企业', accounts: ['6222021100012345681', '6222021100012345682'], type: 'enterprise', contact: '王总', phone: '13800138002', address: '深圳市南山区' },
+{ id: 'C004', customerNo: '20260004', name: '广州物流运输公司', accounts: ['6222021100012345683'], type: 'enterprise', contact: '刘总', phone: '13800138003', address: '广州市天河区' },
+{ id: 'C005', customerNo: '20260005', name: '杭州电子商务', accounts: ['6222021100012345684', '6222021100012345685'], type: 'enterprise', contact: '陈总', phone: '13800138004', address: '杭州市滨江区' },
+{ id: 'C006', customerNo: '20260006', name: '张三', accounts: ['6222021100012345686'], type: 'personal', phone: '13900139000' },
+{ id: 'C007', customerNo: '20260007', name: '李四', accounts: ['6222021100012345687', '6222021100012345688'], type: 'personal', phone: '13900139001' }
+];
+},
 
       generateSampleDeposits() {
         return [
@@ -1834,30 +1834,34 @@ renderTasks() {
               <button class="btn btn-primary" onclick="App.openCustomerModal()">+ 新增客户</button>
             </div>
             <table class="projects-table">
-              <thead>
-                <tr>
-                  <th>客户编号</th>
-                  <th>客户名称</th>
-                  <th>类型</th>
-                  <th>联系人</th>
-                  <th>联系电话</th>
-                  <th>操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${customers.map(c => `
-                  <tr>
-                    <td>${c.id}</td>
-                    <td>${c.name}</td>
-                    <td>${c.type === 'enterprise' ? '企业' : '个人'}</td>
-                    <td>${c.contact || '-'}</td>
-                    <td>${c.phone}</td>
-                    <td>
-                      <button class="btn btn-secondary" style="padding:4px 8px;font-size:12px;" onclick="App.editCustomer('${c.id}')">编辑</button>
-                    </td>
-                  </tr>
-                `).join('')}
-              </tbody>
+<thead>
+<tr>
+<th>客户号</th>
+<th>客户编号</th>
+<th>客户名称</th>
+<th>客户账号</th>
+<th>类型</th>
+<th>联系人</th>
+<th>联系电话</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+${customers.map(c => `
+<tr>
+<td>${c.customerNo || '-'}</td>
+<td>${c.id}</td>
+<td>${c.name}</td>
+<td>${(c.accounts || []).join(', ') || '-'}</td>
+<td>${c.type === 'enterprise' ? '企业' : '个人'}</td>
+<td>${c.contact || '-'}</td>
+<td>${c.phone}</td>
+<td>
+<button class="btn btn-secondary" style="padding:4px 8px;font-size:12px;" onclick="App.editCustomer('${c.id}')">编辑</button>
+</td>
+</tr>
+`).join('')}
+</tbody>
             </table>
           </div>
         `;
@@ -1869,35 +1873,43 @@ renderTasks() {
         document.getElementById('detailModal').classList.add('active');
         document.querySelector('#detailModal .modal-title').textContent = isEdit ? '编辑客户' : '新增客户';
         document.getElementById('detailContent').innerHTML = `
-          <form style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
-            <div class="form-group">
-              <label class="form-label">客户编号</label>
-              <input type="text" class="form-input" id="custId" value="${customer ? customer.id : ''}" ${isEdit ? 'readonly' : ''}>
-            </div>
-            <div class="form-group">
-              <label class="form-label">客户名称 *</label>
-              <input type="text" class="form-input" id="custName" value="${customer ? customer.name : ''}" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">客户类型 *</label>
-              <select class="form-select" id="custType">
-                <option value="enterprise" ${customer && customer.type === 'enterprise' ? 'selected' : ''}>企业客户</option>
-                <option value="personal" ${customer && customer.type === 'personal' ? 'selected' : ''}>个人客户</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">联系人</label>
-              <input type="text" class="form-input" id="custContact" value="${customer ? customer.contact || '' : ''}">
-            </div>
-            <div class="form-group">
-              <label class="form-label">联系电话</label>
-              <input type="text" class="form-input" id="custPhone" value="${customer ? customer.phone || '' : ''}">
-            </div>
-            <div class="form-group">
-              <label class="form-label">地址</label>
-              <input type="text" class="form-input" id="custAddress" value="${customer ? customer.address || '' : ''}">
-            </div>
-          </form>
+<form style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+<div class="form-group">
+<label class="form-label">客户编号</label>
+<input type="text" class="form-input" id="custId" value="${customer ? customer.id : ''}" ${isEdit ? 'readonly' : ''}>
+</div>
+<div class="form-group">
+<label class="form-label">客户号（唯一）*</label>
+<input type="text" class="form-input" id="custNo" value="${customer ? customer.customerNo || '' : ''}" placeholder="如：20260001" required>
+</div>
+<div class="form-group">
+<label class="form-label">客户名称 *</label>
+<input type="text" class="form-input" id="custName" value="${customer ? customer.name : ''}" required>
+</div>
+<div class="form-group">
+<label class="form-label">客户账号（多个用逗号分隔）</label>
+<input type="text" class="form-input" id="custAccounts" value="${customer ? (customer.accounts || []).join(', ') : ''}" placeholder="如：6222021234567890, 6222021234567891">
+</div>
+<div class="form-group">
+<label class="form-label">客户类型 *</label>
+<select class="form-select" id="custType">
+<option value="enterprise" ${customer && customer.type === 'enterprise' ? 'selected' : ''}>企业客户</option>
+<option value="personal" ${customer && customer.type === 'personal' ? 'selected' : ''}>个人客户</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">联系人</label>
+<input type="text" class="form-input" id="custContact" value="${customer ? customer.contact || '' : ''}">
+</div>
+<div class="form-group">
+<label class="form-label">联系电话</label>
+<input type="text" class="form-input" id="custPhone" value="${customer ? customer.phone || '' : ''}">
+</div>
+<div class="form-group">
+<label class="form-label">地址</label>
+<input type="text" class="form-input" id="custAddress" value="${customer ? customer.address || '' : ''}">
+</div>
+</form>
           <div style="margin-top:24px;display:flex;justify-content:flex-end;gap:12px;">
             <button class="btn btn-secondary" onclick="App.closeModal('detailModal')">取消</button>
             <button class="btn btn-primary" onclick="App.saveCustomer(${isEdit ? `'${customer.id}'` : 'null'})">保存</button>
@@ -1910,23 +1922,27 @@ renderTasks() {
         if (customer) this.openCustomerModal(customer);
       },
 
-      saveCustomer(existingId) {
-        const id = existingId || `C${String(this.data.customers.length + 1).padStart(3, '0')}`;
-        const name = document.getElementById('custName').value;
-        const type = document.getElementById('custType').value;
-        const contact = document.getElementById('custContact').value;
-        const phone = document.getElementById('custPhone').value;
-        const address = document.getElementById('custAddress').value;
+saveCustomer(existingId) {
+const id = existingId || `C${String(this.data.customers.length + 1).padStart(3, '0')}`;
+const customerNo = document.getElementById('custNo').value.trim();
+const name = document.getElementById('custName').value;
+const accountsInput = document.getElementById('custAccounts').value;
+const accounts = accountsInput ? accountsInput.split(',').map(a => a.trim()).filter(a => a) : [];
+const type = document.getElementById('custType').value;
+const contact = document.getElementById('custContact').value;
+const phone = document.getElementById('custPhone').value;
+const address = document.getElementById('custAddress').value;
 
-        if (!name) { alert('请输入客户名称'); return; }
+if (!customerNo) { alert('请输入客户号'); return; }
+if (!name) { alert('请输入客户名称'); return; }
 
-        const customerData = { id, name, type, contact, phone, address };
-        if (existingId) {
-          const idx = this.data.customers.findIndex(c => c.id === existingId);
-          this.data.customers[idx] = customerData;
-        } else {
-          this.data.customers.push(customerData);
-        }
+const customerData = { id, customerNo, name, accounts, type, contact, phone, address };
+if (existingId) {
+const idx = this.data.customers.findIndex(c => c.id === existingId);
+this.data.customers[idx] = customerData;
+} else {
+this.data.customers.push(customerData);
+}
 
         this.saveData();
         this.closeModal('detailModal');
