@@ -1684,56 +1684,68 @@ return [
       },
 
 renderTasks() {
-        const projectsWithTasks = this.data.projects.map(p => ({
-          ...p,
-          pendingTasks: p.tasks.filter(t => !t.completed),
-          completedTasks: p.tasks.filter(t => t.completed)
-        })).filter(p => p.tasks.length > 0);
+const projectsWithTasks = this.data.projects.map(p => {
+const customerInfos = (p.customerIds || []).map(cid => {
+const c = this.data.customers.find(cust => cust.id === cid);
+return c ? { id: cid, name: c.name, customerNo: c.customerNo || '' } : null;
+}).filter(c => c);
+return {
+...p,
+customerInfos,
+pendingTasks: p.tasks.filter(t => !t.completed),
+completedTasks: p.tasks.filter(t => t.completed),
+sortedTasks: [...p.tasks.filter(t => !t.completed), ...p.tasks.filter(t => t.completed)]
+};
+}).filter(p => p.tasks.length > 0);
 
-        return `
-          <div class="fade-in">
-            ${projectsWithTasks.length > 0 ? projectsWithTasks.map((p, idx) => `
-              <div class="card" style="margin-bottom: 16px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding-bottom:12px;border-bottom:1px solid var(--border);" onclick="App.toggleTaskSection('taskSection${idx}')">
-                  <div style="display:flex;align-items:center;gap:12px;">
-                    <span id="taskIcon${idx}" style="font-size:12px;">▼</span>
-                    <div>
-                      <h3 style="font-size:16px;color:var(--primary);cursor:pointer;" onclick="event.stopPropagation();App.showProjectDetail('${p.id}')">${p.name}</h3>
-                      <div style="font-size:12px;color:var(--text-light);">${(p.customerNames || []).join(', ')}</div>
-                    </div>
-                  </div>
-                  <div style="text-align:right;">
-                    <span class="stage-badge ${p.stage}">${this.getStageText(p.stage)}</span>
-                    <div style="font-size:12px;color:var(--text-light);margin-top:4px;">
-                      待办: ${p.pendingTasks.length} | 已完成: ${p.completedTasks.length}
-                    </div>
-                  </div>
-                </div>
-                <div id="taskSection${idx}">
-                  <ul class="task-list" style="margin-left:0;margin-top:16px;">
-                    ${p.tasks.map(t => `
-                      <li class="task-item">
-                        <div class="task-checkbox ${t.completed ? 'checked' : ''}" onclick="App.toggleTask('${t.id}', '${p.id}')">
-                          ${t.completed ? '✓' : ''}
-                        </div>
-                        <div class="task-content">
-                          <div class="task-title ${t.completed ? 'checked' : ''}">${t.title}</div>
-                        </div>
-                      </li>
-                    `).join('')}
-                  </ul>
-                </div>
-              </div>
-            `).join('') : `
-              <div class="card">
-                <div class="empty-state">
-                  <div class="empty-icon">✅</div>
-                  <p>暂无项目任务</p>
-                </div>
-              </div>
-            `}
-          </div>
-        `;
+return `
+<div class="fade-in">
+${projectsWithTasks.length > 0 ? projectsWithTasks.map((p, idx) => `
+<div class="card" style="margin-bottom: 16px;">
+<div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding-bottom:12px;border-bottom:1px solid var(--border);" onclick="App.toggleTaskSection('taskSection${idx}')">
+<div style="display:flex;align-items:center;gap:12px;">
+<span id="taskIcon${idx}" style="font-size:12px;">▼</span>
+<div>
+<h3 style="font-size:16px;color:var(--primary);cursor:pointer;" onclick="event.stopPropagation();App.showProjectDetail('${p.id}')">${p.name}</h3>
+<div style="font-size:12px;color:var(--text-light);">${(p.customerInfos || []).map(c => c.name + (c.customerNo ? ` (${c.customerNo})` : '')).join(', ') || (p.customerNames || []).join(', ')}</div>
+</div>
+</div>
+<div style="text-align:right;">
+<span class="stage-badge ${p.stage}">${this.getStageText(p.stage)}</span>
+<div style="font-size:12px;color:var(--text-light);margin-top:4px;">
+待办: ${p.pendingTasks.length} | 已完成: ${p.completedTasks.length}
+</div>
+</div>
+</div>
+<div id="taskSection${idx}">
+<ul class="task-list" style="margin-left:0;margin-top:16px;">
+${p.sortedTasks.map(t => {
+const taskCustomer = t.customerId ? this.data.customers.find(c => c.id === t.customerId) : null;
+const customerLabel = taskCustomer ? `<span style="font-size:11px;color:var(--text-light);margin-left:8px;">[${taskCustomer.name}${taskCustomer.customerNo ? ' ' + taskCustomer.customerNo : ''}]</span>` : '';
+return `
+<li class="task-item">
+<div class="task-checkbox ${t.completed ? 'checked' : ''}" onclick="App.toggleTask('${t.id}', '${p.id}')">
+${t.completed ? '✓' : ''}
+</div>
+<div class="task-content">
+<div class="task-title ${t.completed ? 'checked' : ''}">${t.title}${customerLabel}</div>
+</div>
+</li>
+`;
+}).join('')}
+</ul>
+</div>
+</div>
+`).join('') : `
+<div class="card">
+<div class="empty-state">
+<div class="empty-icon">✅</div>
+<p>暂无项目任务</p>
+</div>
+</div>
+`}
+</div>
+`;
       },
 
       renderStatistics() {
@@ -2158,21 +2170,25 @@ this.data.customers.push(customerData);
             </div>
           </div>
 
-          <div style="margin-top: 24px;">
-            <h4 style="margin-bottom: 16px; font-size: 14px; color: var(--text-light);">任务清单</h4>
-            <ul class="task-list">
-              ${project.tasks.map(t => `
-                <li class="task-item">
-                  <div class="task-checkbox ${t.completed ? 'checked' : ''}" onclick="App.toggleTask('${t.id}', '${project.id}')">
-                    ${t.completed ? '✓' : ''}
-                  </div>
-                  <div class="task-content">
-                    <div class="task-title ${t.completed ? 'checked' : ''}">${t.title}</div>
-                  </div>
-                </li>
-              `).join('')}
-            </ul>
-          </div>
+<div style="margin-top: 24px;">
+<h4 style="margin-bottom: 16px; font-size: 14px; color: var(--text-light);">任务清单</h4>
+<ul class="task-list">
+${[...project.tasks.filter(t => !t.completed), ...project.tasks.filter(t => t.completed)].map(t => {
+const taskCustomer = t.customerId ? this.data.customers.find(c => c.id === t.customerId) : null;
+const customerLabel = taskCustomer ? `<span style="font-size:11px;color:var(--text-light);margin-left:8px;">[${taskCustomer.name}${taskCustomer.customerNo ? ' ' + taskCustomer.customerNo : ''}]</span>` : '';
+return `
+<li class="task-item">
+<div class="task-checkbox ${t.completed ? 'checked' : ''}" onclick="App.toggleTask('${t.id}', '${project.id}')">
+${t.completed ? '✓' : ''}
+</div>
+<div class="task-content">
+<div class="task-title ${t.completed ? 'checked' : ''}">${t.title}${customerLabel}</div>
+</div>
+</li>
+`;
+}).join('')}
+</ul>
+</div>
 
           <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end;">
             <button class="btn btn-secondary" onclick="App.editProject('${project.id}'); App.closeModal('detailModal');">编辑项目</button>
