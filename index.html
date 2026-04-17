@@ -1183,6 +1183,7 @@ data: {
   searchQuery: '',
   filterStatus: '',
   filterStage: '',
+  projectTab: 'recent',
   options: {
     stages: [
       { value: 'pre', label: '贷前调查' },
@@ -1771,11 +1772,29 @@ getGuaranteeTypeText(type) {
       },
 
 renderDashboard() {
-    const stats = this.getStats();
-    const recentProjects = this.getFilteredProjects().slice(0, 5);
-    const pendingTasks = this.data.projects.flatMap(p => p.tasks.filter(t => !t.completed)).slice(0, 8);
+  const stats = this.getStats();
+  const allProjects = this.data.projects;
+  const pendingProjects = allProjects.filter(p => {
+    const completedStatus = this.data.options.statuses.find(s => s.label === '已完成');
+    return !completedStatus || p.status !== completedStatus.value;
+  });
+  const unfinishedProjects = pendingProjects.sort((a, b) => {
+    const daysA = Math.floor((Date.now() - new Date(a.createdAt).getTime()) / (1000 * 60 * 60 * 24));
+    const daysB = Math.floor((Date.now() - new Date(b.createdAt).getTime()) / (1000 * 60 * 60 * 24));
+    return daysB - daysA;
+  }).slice(0, 5);
+  const importantProjects = [...allProjects].sort((a, b) => {
+    const urgencyOrder = { very_urgent: 3, urgent: 2, normal: 1 };
+    return (urgencyOrder[b.urgency] || 1) - (urgencyOrder[a.urgency] || 1);
+  }).slice(0, 5);
+  const recentProjects = this.getFilteredProjects().slice(0, 5);
+  const pendingTasks = this.data.projects.flatMap(p => p.tasks.filter(t => !t.completed)).slice(0, 8);
 
-    return `
+  const currentTab = this.data.projectTab;
+  const displayProjects = currentTab === 'unfinished' ? unfinishedProjects : (currentTab === 'important' ? importantProjects : recentProjects);
+  const tabTitle = currentTab === 'unfinished' ? '未完成项目' : (currentTab === '重要项目' ? '重要项目' : '最近项目');
+
+  return `
     <div class="stats-grid fade-in">
       <div class="stat-card">
         <div class="stat-icon primary">📁</div>
@@ -1799,40 +1818,47 @@ renderDashboard() {
       </div>
     </div>
 
-    <div class="section fade-in">
-      <div class="section-header">
-        <h3 class="section-title">最近项目</h3>
-        <button class="btn btn-secondary" onclick="App.navigateTo('projects')">查看全部</button>
-      </div>
-      <div class="section-body">
-        <table class="projects-table">
-          <thead>
-            <tr>
-              <th>项目编号</th>
-              <th>项目名称</th>
-              <th>客户名称</th>
-              <th>授信金额</th>
-              <th>紧急度</th>
-              <th>当前阶段</th>
-              <th>状态</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${recentProjects.map(p => `
-            <tr>
-              <td>${p.id}</td>
-              <td><span class="project-name" onclick="App.showProjectDetail('${p.id}')">${p.name}</span></td>
-              <td style="white-space:nowrap;">${(p.customerNames || []).map(n => `<div>${n}</div>`).join('')}</td>
-              <td class="amount">${this.formatAmountInWan(p.amount)}</td>
-              <td><span class="urgency-badge ${this.getUrgencyClass(p.urgency)}">${this.getUrgencyText(p.urgency)}</span></td>
-              <td><span class="stage-badge ${p.stage}">${this.getStageText(p.stage)}</span></td>
-              <td><span class="status-badge ${p.status}">${this.getStatusText(p.status)}</span></td>
-            </tr>
-            `).join('')}
-          </tbody>
-        </table>
+<div class="section fade-in">
+  <div class="section-header">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <h3 class="section-title">${tabTitle}</h3>
+      <div style="display:flex;gap:8px;">
+        <button class="btn ${currentTab === 'recent' ? 'btn-primary' : 'btn-secondary'}" style="padding:4px 12px;font-size:12px;" onclick="App.switchProjectTab('recent')">最近项目</button>
+        <button class="btn ${currentTab === 'unfinished' ? 'btn-primary' : 'btn-secondary'}" style="padding:4px 12px;font-size:12px;" onclick="App.switchProjectTab('unfinished')">未完成</button>
+        <button class="btn ${currentTab === 'important' ? 'btn-primary' : 'btn-secondary'}" style="padding:4px 12px;font-size:12px;" onclick="App.switchProjectTab('important')">重要项目</button>
       </div>
     </div>
+    <button class="btn btn-secondary" onclick="App.navigateTo('projects')">查看全部</button>
+  </div>
+  <div class="section-body">
+    <table class="projects-table">
+      <thead>
+        <tr>
+          <th>项目编号</th>
+          <th>项目名称</th>
+          <th>客户名称</th>
+          <th>授信金额</th>
+          <th>紧急度</th>
+          <th>当前阶段</th>
+          <th>状态</th>
+        </tr>
+      </thead>
+      <tbody>
+      ${displayProjects.map(p => `
+        <tr>
+          <td>${p.id}</td>
+          <td><span class="project-name" onclick="App.showProjectDetail('${p.id}')">${p.name}</span></td>
+          <td style="white-space:nowrap;">${(p.customerNames || []).map(n => `<div>${n}</div>`).join('')}</td>
+          <td class="amount">${this.formatAmountInWan(p.amount)}</td>
+          <td><span class="urgency-badge ${this.getUrgencyClass(p.urgency)}">${this.getUrgencyText(p.urgency)}</span></td>
+          <td><span class="stage-badge ${p.stage}">${this.getStageText(p.stage)}</span></td>
+          <td><span class="status-badge ${p.status}">${this.getStatusText(p.status)}</span></td>
+        </tr>
+      `).join('')}
+      </tbody>
+    </table>
+  </div>
+</div>
 
     <div class="section fade-in">
       <div class="section-header">
@@ -2724,12 +2750,17 @@ showProjectDetail(id) {
         document.getElementById('notificationDot').style.display = 'none';
       },
 
-      navigateTo(page) {
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        document.querySelector(`[data-page="${page}"]`)?.classList.add('active');
-        this.data.currentPage = page;
-        this.render();
-      },
+navigateTo(page) {
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.querySelector(`[data-page="${page}"]`)?.classList.add('active');
+  this.data.currentPage = page;
+  this.render();
+},
+
+switchProjectTab(tab) {
+  this.data.projectTab = tab;
+  this.render();
+},
 
       filterByStatus() {
         const filter = document.getElementById('statusFilter');
