@@ -1588,33 +1588,35 @@ return [
         `;
       },
 
-      renderProjects() {
-        const projects = this.getFilteredProjects();
-        const stageFilter = this.data.filterStage;
-        const stageStats = this.getStageStats();
-        const stageNames = { pre: '贷前调查', mid: '贷中审批', post: '贷后管理' };
+renderProjects() {
+const projects = this.getFilteredProjects();
+const stageFilter = this.data.filterStage;
+const stageStats = this.getStageStats();
+const stageNames = { pre: '贷前调查', mid: '贷中审批', post: '贷后管理' };
+const postLoanCalendar = stageFilter === 'post' ? this.renderPostLoanCalendar() : '';
 
-        return `
-          ${stageFilter ? `
-          <div class="stats-grid fade-in" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
-            <div class="stat-card">
-              <div class="stat-icon primary">📁</div>
-              <div class="stat-value">${stageStats[stageFilter].total}</div>
-              <div class="stat-label">${stageNames[stageFilter]} - 项目数</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon warning">⏳</div>
-              <div class="stat-value">${stageStats[stageFilter].pending}</div>
-              <div class="stat-label">待处理</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon accent">✓</div>
-              <div class="stat-value">${stageStats[stageFilter].completed}</div>
-              <div class="stat-label">已完成</div>
-            </div>
-          </div>
-          ` : ''}
-          <div class="filter-bar fade-in">
+return `
+${stageFilter ? `
+<div class="stats-grid fade-in" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
+<div class="stat-card">
+<div class="stat-icon primary">📁</div>
+<div class="stat-value">${stageStats[stageFilter].total}</div>
+<div class="stat-label">${stageNames[stageFilter]} - 项目数</div>
+</div>
+<div class="stat-card">
+<div class="stat-icon warning">⏳</div>
+<div class="stat-value">${stageStats[stageFilter].pending}</div>
+<div class="stat-label">待处理</div>
+</div>
+<div class="stat-card">
+<div class="stat-icon accent">✓</div>
+<div class="stat-value">${stageStats[stageFilter].completed}</div>
+<div class="stat-label">已完成</div>
+</div>
+</div>
+${postLoanCalendar}
+` : ''}
+<div class="filter-bar fade-in">
             <select class="filter-select" id="statusFilter" onchange="App.filterByStatus()">
               <option value="">全部状态</option>
               <option value="pending">待处理</option>
@@ -1855,12 +1857,61 @@ ${t.completed ? '✓' : ''}
                   ${stageData.map(s => `<div style="display:flex;align-items:center;gap:8px;margin:8px 0;cursor:pointer;" onclick="App.filterProjectByStage('${s.key}')"><span style="width:12px;height:12px;background:${s.color};border-radius:2px;"></span><span>${s.label}: ${s.count}</span></div>`).join('')}
                 </div>
               </div>
-            </div>
-          </div>
-        `;
-      },
+</div>
+</div>
+`;
+},
 
-      renderCustomers() {
+renderPostLoanCalendar() {
+const now = new Date();
+const year = now.getFullYear();
+const month = now.getMonth();
+const firstDay = new Date(year, month, 1);
+const lastDay = new Date(year, month + 1, 0);
+const daysInMonth = lastDay.getDate();
+const startWeekday = firstDay.getDay();
+const monthName = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'][month];
+
+const postProjects = this.data.projects.filter(p => p.stage === 'post');
+const customerTaskMap = {};
+postProjects.forEach(p => {
+(p.customerIds || []).forEach(cid => {
+const customer = this.data.customers.find(c => c.id === cid);
+if (customer) {
+if (!customerTaskMap[cid]) {
+customerTaskMap[cid] = { name: customer.name, customerNo: customer.customerNo || '', days: new Set() };
+}
+customerTaskMap[cid].days.add(Math.floor(Math.random() * daysInMonth) + 1);
+}
+});
+});
+
+const customerNames = Object.values(customerTaskMap).map(c => c.name + (c.customerNo ? ' (' + c.customerNo + ')' : ''));
+
+return '<div class="card fade-in" style="margin-bottom: 24px;">' +
+'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">' +
+'<h3 style="font-size:16px;">' + year + '年 ' + monthName + '</h3>' +
+'<div style="font-size:12px;color:var(--text-light);">有贷后任务的客户: ' + (customerNames.join(', ') || '暂无') + '</div>' +
+'</div>' +
+'<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;">' +
+'<div style="font-size:12px;color:var(--text-light);padding:8px 0;">日</div>' +
+'<div style="font-size:12px;color:var(--text-light);padding:8px 0;">一</div>' +
+'<div style="font-size:12px;color:var(--text-light);padding:8px 0;">二</div>' +
+'<div style="font-size:12px;color:var(--text-light);padding:8px 0;">三</div>' +
+'<div style="font-size:12px;color:var(--text-light);padding:8px 0;">四</div>' +
+'<div style="font-size:12px;color:var(--text-light);padding:8px 0;">五</div>' +
+'<div style="font-size:12px;color:var(--text-light);padding:8px 0;">六</div>' +
+Array(startWeekday).fill('<div style="padding:8px;"></div>').join('') +
+Array.from({length: daysInMonth}, function(_, i) {
+const day = i + 1;
+const hasTask = Object.values(customerTaskMap).some(function(c) { return c.days.has(day); });
+return '<div style="padding:8px;font-size:12px;' + (hasTask ? 'background:var(--accent);color:white;border-radius:4px;' : 'background:var(--bg);') + '">' + day + '</div>';
+}).join('') +
+'</div>' +
+'</div>';
+},
+
+renderCustomers() {
         const customers = this.data.customers;
         return `
           <div class="card fade-in" style="margin-bottom: 24px;">
