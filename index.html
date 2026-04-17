@@ -1863,10 +1863,12 @@ ${t.completed ? '✓' : ''}
 },
 
 renderPostLoanCalendar() {
+const calendarDate = this.data.calendarDate ? new Date(this.data.calendarDate) : new Date();
 const now = new Date();
-const year = now.getFullYear();
-const month = now.getMonth();
+const year = calendarDate.getFullYear();
+const month = calendarDate.getMonth();
 const today = now.getDate();
+const isCurrentMonth = year === now.getFullYear() && month === now.getMonth();
 const firstDay = new Date(year, month, 1);
 const lastDay = new Date(year, month + 1, 0);
 const daysInMonth = lastDay.getDate();
@@ -1893,7 +1895,11 @@ const customersWithTasks = Object.values(customerTaskMap);
 
 return '<div class="card fade-in" style="margin-bottom: 24px;">' +
 '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">' +
+'<div style="display:flex;align-items:center;gap:12px;">' +
+'<button class="btn btn-secondary" style="padding:6px 12px;" onclick="App.changeCalendarMonth(-1)">◀ 上月</button>' +
 '<h3 style="font-size:16px;">' + year + '年 ' + monthName + '</h3>' +
+'<button class="btn btn-secondary" style="padding:6px 12px;" onclick="App.changeCalendarMonth(1)">下月 ▶</button>' +
+'</div>' +
 '<div style="font-size:12px;color:var(--text-light);">有贷后任务的客户: ' + (customerNames.join(', ') || '暂无') + '</div>' +
 '</div>' +
 '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;">' +
@@ -1907,7 +1913,7 @@ return '<div class="card fade-in" style="margin-bottom: 24px;">' +
 Array(startWeekday).fill('<div style="padding:8px;"></div>').join('') +
 Array.from({length: daysInMonth}, function(_, i) {
 const day = i + 1;
-const isToday = day === today;
+const isToday = isCurrentMonth && day === today;
 const customersOnDay = customersWithTasks.filter(function(c) { return c.days.has(day); });
 const hasTask = customersOnDay.length > 0;
 const customerNamesOnDay = customersOnDay.map(function(c) { return c.name; }).join('<br>');
@@ -1924,6 +1930,16 @@ return '<div style="' + style + '">' + day + (customerNamesOnDay ? '<br>' + cust
 }).join('') +
 '</div>' +
 '</div>';
+},
+
+changeCalendarMonth(delta) {
+if (!this.data.calendarDate) {
+this.data.calendarDate = new Date().toISOString();
+}
+const d = new Date(this.data.calendarDate);
+d.setMonth(d.getMonth() + delta);
+this.data.calendarDate = d.toISOString();
+this.render();
 },
 
 renderCustomers() {
