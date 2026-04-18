@@ -1292,27 +1292,27 @@ initOptionDropdowns() {
 },
 
 generateSampleCustomers() {
-return [
-{ id: 'C001', customerNo: '20260001', name: '北京创新科技有限公司', accounts: ['6222021100012345678', '6222021100012345679'], type: 'enterprise', contact: '张总', phone: '13800138000', address: '北京市朝阳区' },
-{ id: 'C002', customerNo: '20260002', name: '上海国际贸易集团', accounts: ['6222021100012345680'], type: 'enterprise', contact: '李经理', phone: '13800138001', address: '上海市浦东新区' },
-{ id: 'C003', customerNo: '20260003', name: '深圳智能制造企业', accounts: ['6222021100012345681', '6222021100012345682'], type: 'enterprise', contact: '王总', phone: '13800138002', address: '深圳市南山区' },
-{ id: 'C004', customerNo: '20260004', name: '广州物流运输公司', accounts: ['6222021100012345683'], type: 'enterprise', contact: '刘总', phone: '13800138003', address: '广州市天河区' },
-{ id: 'C005', customerNo: '20260005', name: '杭州电子商务', accounts: ['6222021100012345684', '6222021100012345685'], type: 'enterprise', contact: '陈总', phone: '13800138004', address: '杭州市滨江区' },
-{ id: 'C006', customerNo: '20260006', name: '张三', accounts: ['6222021100012345686'], type: 'personal', phone: '13900139000' },
-{ id: 'C007', customerNo: '20260007', name: '李四', accounts: ['6222021100012345687', '6222021100012345688'], type: 'personal', phone: '13900139001' }
-];
+  return [
+    { customerNo: '20260001', name: '北京创新科技有限公司', accounts: ['6222021100012345678', '6222021100012345679'], type: 'enterprise', contact: '张总', phone: '13800138000', address: '北京市朝阳区' },
+    { customerNo: '20260002', name: '上海国际贸易集团', accounts: ['6222021100012345680'], type: 'enterprise', contact: '李经理', phone: '13800138001', address: '上海市浦东新区' },
+    { customerNo: '20260003', name: '深圳智能制造企业', accounts: ['6222021100012345681', '6222021100012345682'], type: 'enterprise', contact: '王总', phone: '13800138002', address: '深圳市南山区' },
+    { customerNo: '20260004', name: '广州物流运输公司', accounts: ['6222021100012345683'], type: 'enterprise', contact: '刘总', phone: '13800138003', address: '广州市天河区' },
+    { customerNo: '20260005', name: '杭州电子商务', accounts: ['6222021100012345684', '6222021100012345685'], type: 'enterprise', contact: '陈总', phone: '13800138004', address: '杭州市滨江区' },
+    { customerNo: '20260006', name: '张三', accounts: ['6222021100012345686'], type: 'personal', phone: '13900139000' },
+    { customerNo: '20260007', name: '李四', accounts: ['6222021100012345687', '6222021100012345688'], type: 'personal', phone: '13900139001' }
+  ];
 },
 
 generateSampleDeposits() {
   return [
-    { id: 'D001', customerId: 'C001', customerName: '北京创新科技有限公司', amount: 5000000, type: '定期', productName: '定期存款A', date: '2025-01-15', rate: 2.1, ftpRate: 1.5, maturityDate: '2026-01-15' },
-    { id: 'D002', customerId: 'C002', customerName: '上海国际贸易集团', amount: 8000000, type: '活期', productName: '活期账户', date: '2025-02-20', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
-    { id: 'D003', customerId: 'C003', customerName: '深圳智能制造企业', amount: 3000000, type: '定期', productName: '定期存款B', date: '2025-03-10', rate: 2.25, ftpRate: 1.6, maturityDate: '2026-03-10' },
-    { id: 'D004', customerId: 'C004', customerName: '广州物流运输公司', amount: 2000000, type: '活期', productName: '活期账户', date: '2025-03-25', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
-    { id: 'D005', customerId: 'C005', customerName: '杭州电子商务', amount: 6000000, type: '定期', productName: '定期存款A', date: '2025-04-05', rate: 2.15, ftpRate: 1.5, maturityDate: '2026-04-05' },
-    { id: 'D006', customerId: 'C001', customerName: '北京创新科技有限公司', amount: 1500000, type: '活期', productName: '活期账户', date: '2025-04-18', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
-    { id: 'D007', customerId: 'C006', customerName: '张三', amount: 500000, type: '定期', productName: '定期存款B', date: '2025-05-01', rate: 2.3, ftpRate: 1.65, maturityDate: '2026-05-01' },
-    { id: 'D008', customerId: 'C007', customerName: '李四', amount: 300000, type: '活期', productName: '活期账户', date: '2025-05-10', rate: 0.35, ftpRate: 0.2, maturityDate: '' }
+    { id: 'D001', customerId: '20260001', customerName: '北京创新科技有限公司', amount: 5000000, type: '定期', productName: '定期存款A', date: '2025-01-15', rate: 2.1, ftpRate: 1.5, maturityDate: '2026-01-15' },
+    { id: 'D002', customerId: '20260002', customerName: '上海国际贸易集团', amount: 8000000, type: '活期', productName: '活期账户', date: '2025-02-20', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
+    { id: 'D003', customerId: '20260003', customerName: '深圳智能制造企业', amount: 3000000, type: '定期', productName: '定期存款B', date: '2025-03-10', rate: 2.25, ftpRate: 1.6, maturityDate: '2026-03-10' },
+    { id: 'D004', customerId: '20260004', customerName: '广州物流运输公司', amount: 2000000, type: '活期', productName: '活期账户', date: '2025-03-25', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
+    { id: 'D005', customerId: '20260005', customerName: '杭州电子商务', amount: 6000000, type: '定期', productName: '定期存款A', date: '2025-04-05', rate: 2.15, ftpRate: 1.5, maturityDate: '2026-04-05' },
+    { id: 'D006', customerId: '20260001', customerName: '北京创新科技有限公司', amount: 1500000, type: '活期', productName: '活期账户', date: '2025-04-18', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
+    { id: 'D007', customerId: '20260006', customerName: '张三', amount: 500000, type: '定期', productName: '定期存款B', date: '2025-05-01', rate: 2.3, ftpRate: 1.65, maturityDate: '2026-05-01' },
+    { id: 'D008', customerId: '20260007', customerName: '李四', amount: 300000, type: '活期', productName: '活期账户', date: '2025-05-10', rate: 0.35, ftpRate: 0.2, maturityDate: '' }
   ];
 },
 
@@ -1488,22 +1488,22 @@ openProjectModal(project = null) {
       currentCustomerFilter: '',
       currentSelectedCustomers: [],
 
-      renderCustomerList() {
-        const container = document.getElementById('customerList');
-        const filter = (this.currentCustomerFilter || '').toLowerCase();
-        const filtered = this.data.customers.filter(c =>
-          c.name.toLowerCase().includes(filter) || (c.contact || '').toLowerCase().includes(filter)
-        );
-        container.innerHTML = filtered.map(c => `
-          <div style="display:flex;align-items:center;gap:8px;padding:6px;border-bottom:1px solid var(--border);cursor:pointer;" onclick="App.toggleCustomer('${c.id}')">
-            <input type="checkbox" ${this.currentSelectedCustomers.includes(c.id) ? 'checked' : ''} onclick="event.stopPropagation();App.toggleCustomer('${c.id}')">
-            <div>
-              <div style="font-weight:500;">${c.name}</div>
-              <div style="font-size:12px;color:var(--text-light);">${c.type === 'enterprise' ? '企业' : '个人'} · ${c.phone || ''}</div>
-            </div>
-          </div>
-        `).join('');
-      },
+renderCustomerList() {
+  const container = document.getElementById('customerList');
+  const filter = (this.currentCustomerFilter || '').toLowerCase();
+  const filtered = this.data.customers.filter(c =>
+    c.name.toLowerCase().includes(filter) || (c.contact || '').toLowerCase().includes(filter)
+  );
+  container.innerHTML = filtered.map(c => `
+  <div style="display:flex;align-items:center;gap:8px;padding:6px;border-bottom:1px solid var(--border);cursor:pointer;" onclick="App.toggleCustomer('${c.customerNo}')">
+  <input type="checkbox" ${this.currentSelectedCustomers.includes(c.customerNo) ? 'checked' : ''} onclick="event.stopPropagation();App.toggleCustomer('${c.customerNo}')">
+  <div>
+    <div style="font-weight:500;">${c.name}</div>
+    <div style="font-size:12px;color:var(--text-light);">${c.type === 'enterprise' ? '企业' : '个人'} · ${c.phone || ''}</div>
+  </div>
+  </div>
+  `).join('');
+},
 
       filterCustomers(value) {
         this.currentCustomerFilter = value;
@@ -1517,9 +1517,9 @@ openProjectModal(project = null) {
         const select = document.getElementById('depositCustomer');
         if (select) {
           const f = value.toLowerCase();
-          select.innerHTML = this.data.customers.filter(c => !f || c.name.toLowerCase().includes(f)).map(c =>
-            `<option value="${c.id}">${c.name}</option>`
-          ).join('');
+select.innerHTML = this.data.customers.filter(c => !f || c.name.toLowerCase().includes(f)).map(c =>
+  `<option value="${c.customerNo}">${c.name}</option>`
+  ).join('');
         }
       },
 
@@ -1559,16 +1559,16 @@ toggleCustomer(customerId) {
     }
   },
 
-      updateSelectedCustomers(selectedIds) {
-        const container = document.getElementById('selectedCustomers');
-        const customers = this.data.customers.filter(c => selectedIds.includes(c.id));
-        container.innerHTML = customers.map(c => `
-          <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;background:var(--primary);color:white;border-radius:4px;font-size:12px;">
-            ${c.name}
-            <span style="cursor:pointer;" onclick="App.removeCustomer('${c.id}')">✕</span>
-          </span>
-        `).join('') || '<span style="color:var(--text-lighter);font-size:12px;">请从上方选择客户</span>';
-      },
+updateSelectedCustomers(selectedIds) {
+  const container = document.getElementById('selectedCustomers');
+  const customers = this.data.customers.filter(c => selectedIds.includes(c.customerNo));
+  container.innerHTML = customers.map(c => `
+  <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;background:var(--primary);color:white;border-radius:4px;font-size:12px;">
+  ${c.name}
+  <span style="cursor:pointer;" onclick="App.removeCustomer('${c.customerNo}')">✕</span>
+  </span>
+  `).join('') || '<span style="color:var(--text-lighter);font-size:12px;">请从上方选择客户</span>';
+},
 
       removeCustomer(customerId) {
         const idx = this.currentSelectedCustomers.indexOf(customerId);
@@ -1618,7 +1618,7 @@ saveProject() {
       return;
     }
 
-    const customerNames = this.data.customers.filter(c => customerIds.includes(c.id)).map(c => c.name);
+    const customerNames = this.data.customers.filter(c => customerIds.includes(c.customerNo)).map(c => c.name);
     const existingIndex = this.data.projects.findIndex(p => p.id === projectCode);
 
     const projectData = {
@@ -2008,31 +2008,31 @@ renderProjects() {
   },
 
 renderTasks() {
-const projectsWithTasks = this.data.projects.map(p => {
-const customerTasksMap = {};
-(p.customerIds || []).forEach(cid => {
-const customer = this.data.customers.find(c => c.id === cid);
-if (customer) {
-customerTasksMap[cid] = {
-customer: { id: cid, name: customer.name, customerNo: customer.customerNo || '' },
-tasks: p.tasks.map(t => ({ ...t, customerId: cid }))
-};
-}
-});
-const allTasks = [];
-Object.keys(customerTasksMap).forEach(cid => {
-const ct = customerTasksMap[cid];
-ct.tasks.forEach(t => {
-allTasks.push({ ...t, customerId: cid });
-});
-});
-return {
-...p,
-customerTasksMap,
-pendingTasks: allTasks.filter(t => !t.completed),
-completedTasks: allTasks.filter(t => t.completed)
-};
-}).filter(p => (p.customerIds || []).length > 0 && p.tasks.length > 0);
+  const projectsWithTasks = this.data.projects.map(p => {
+    const customerTasksMap = {};
+    (p.customerIds || []).forEach(cid => {
+      const customer = this.data.customers.find(c => c.customerNo === cid);
+      if (customer) {
+        customerTasksMap[cid] = {
+          customer: { customerNo: cid, name: customer.name },
+          tasks: p.tasks.map(t => ({ ...t, customerId: cid }))
+        };
+      }
+    });
+    const allTasks = [];
+    Object.keys(customerTasksMap).forEach(cid => {
+      const ct = customerTasksMap[cid];
+      ct.tasks.forEach(t => {
+        allTasks.push({ ...t, customerId: cid });
+      });
+    });
+    return {
+      ...p,
+      customerTasksMap,
+      pendingTasks: allTasks.filter(t => !t.completed),
+      completedTasks: allTasks.filter(t => t.completed)
+    };
+  }).filter(p => (p.customerIds || []).length > 0 && p.tasks.length > 0);
 
 return `
 <div class="fade-in">
@@ -2204,16 +2204,16 @@ const monthName = ['一月', '二月', '三月', '四月', '五月', '六月', '
 const postProjects = this.data.projects.filter(p => p.stage === 'post');
 const customerTaskMap = {};
 postProjects.forEach(p => {
-(p.customerIds || []).forEach(cid => {
-const customer = this.data.customers.find(c => c.id === cid);
-if (customer) {
-if (!customerTaskMap[cid]) {
-customerTaskMap[cid] = { name: customer.name, customerNo: customer.customerNo || '', days: new Set() };
-}
-customerTaskMap[cid].days.add(Math.floor(Math.random() * daysInMonth) + 1);
-}
-});
-});
+    (p.customerIds || []).forEach(cid => {
+      const customer = this.data.customers.find(c => c.customerNo === cid);
+      if (customer) {
+        if (!customerTaskMap[cid]) {
+          customerTaskMap[cid] = { name: customer.name, customerNo: cid, days: new Set() };
+        }
+        customerTaskMap[cid].days.add(Math.floor(Math.random() * daysInMonth) + 1);
+      }
+    });
+  });
 
 const customerNames = Object.values(customerTaskMap).map(c => c.name + (c.customerNo ? ' (' + c.customerNo + ')' : ''));
 
@@ -2276,36 +2276,34 @@ renderCustomers() {
               <h3 style="font-size:16px;">客户列表</h3>
               <button class="btn btn-primary" onclick="App.openCustomerModal()">+ 新增客户</button>
             </div>
-            <table class="projects-table">
-<thead>
-<tr>
-<th>客户号</th>
-<th>客户编号</th>
-<th>客户名称</th>
-<th>客户账号</th>
-<th>类型</th>
-<th>联系人</th>
-<th>联系电话</th>
-<th>操作</th>
-</tr>
-</thead>
-<tbody>
-${customers.map(c => `
-<tr>
-<td>${c.customerNo || '-'}</td>
-<td>${c.id}</td>
-<td>${c.name}</td>
-<td>${(c.accounts || []).join(', ') || '-'}</td>
-<td>${c.type === 'enterprise' ? '企业' : '个人'}</td>
-<td>${c.contact || '-'}</td>
-<td>${c.phone}</td>
-<td>
-<button class="btn btn-secondary" style="padding:4px 8px;font-size:12px;" onclick="App.editCustomer('${c.id}')">编辑</button>
-</td>
-</tr>
-`).join('')}
-</tbody>
-            </table>
+<table class="projects-table">
+    <thead>
+      <tr>
+        <th>客户号</th>
+        <th>客户名称</th>
+        <th>客户账号</th>
+        <th>类型</th>
+        <th>联系人</th>
+        <th>联系电话</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+    ${customers.map(c => `
+    <tr>
+      <td>${c.customerNo || '-'}</td>
+      <td>${c.name}</td>
+      <td>${(c.accounts || []).map(a => `<div>${a}</div>`).join('') || '-'}</td>
+      <td>${c.type === 'enterprise' ? '企业' : '个人'}</td>
+      <td>${c.contact || '-'}</td>
+      <td>${c.phone}</td>
+      <td>
+        <button class="btn btn-secondary" style="padding:4px 8px;font-size:12px;" onclick="App.editCustomer('${c.customerNo}')">编辑</button>
+      </td>
+    </tr>
+    `).join('')}
+    </tbody>
+  </table>
           </div>
         `;
       },
@@ -2315,83 +2313,78 @@ ${customers.map(c => `
         const isEdit = customer != null;
         document.getElementById('detailModal').classList.add('active');
         document.querySelector('#detailModal .modal-title').textContent = isEdit ? '编辑客户' : '新增客户';
-        document.getElementById('detailContent').innerHTML = `
-<form style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
-<div class="form-group">
-<label class="form-label">客户编号</label>
-<input type="text" class="form-input" id="custId" value="${customer ? customer.id : ''}" ${isEdit ? 'readonly' : ''}>
-</div>
-<div class="form-group">
-<label class="form-label">客户号（唯一）*</label>
-<input type="text" class="form-input" id="custNo" value="${customer ? customer.customerNo || '' : ''}" placeholder="如：20260001" required>
-</div>
-<div class="form-group">
-<label class="form-label">客户名称 *</label>
-<input type="text" class="form-input" id="custName" value="${customer ? customer.name : ''}" required>
-</div>
-<div class="form-group">
-<label class="form-label">客户账号（多个用逗号分隔）</label>
-<input type="text" class="form-input" id="custAccounts" value="${customer ? (customer.accounts || []).join(', ') : ''}" placeholder="如：6222021234567890, 6222021234567891">
-</div>
-<div class="form-group">
-<label class="form-label">客户类型 *</label>
-<select class="form-select" id="custType">
-<option value="enterprise" ${customer && customer.type === 'enterprise' ? 'selected' : ''}>企业客户</option>
-<option value="personal" ${customer && customer.type === 'personal' ? 'selected' : ''}>个人客户</option>
-</select>
-</div>
-<div class="form-group">
-<label class="form-label">联系人</label>
-<input type="text" class="form-input" id="custContact" value="${customer ? customer.contact || '' : ''}">
-</div>
-<div class="form-group">
-<label class="form-label">联系电话</label>
-<input type="text" class="form-input" id="custPhone" value="${customer ? customer.phone || '' : ''}">
-</div>
-<div class="form-group">
-<label class="form-label">地址</label>
-<input type="text" class="form-input" id="custAddress" value="${customer ? customer.address || '' : ''}">
-</div>
-</form>
-          <div style="margin-top:24px;display:flex;justify-content:flex-end;gap:12px;">
-            <button class="btn btn-secondary" onclick="App.closeModal('detailModal')">取消</button>
-            <button class="btn btn-primary" onclick="App.saveCustomer(${isEdit ? `'${customer.id}'` : 'null'})">保存</button>
-          </div>
-        `;
+document.getElementById('detailContent').innerHTML = `
+  <form style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+    <div class="form-group">
+      <label class="form-label">客户号（唯一）*</label>
+      <input type="text" class="form-input" id="custNo" value="${customer ? customer.customerNo || '' : ''}" placeholder="如：20260001" required ${isEdit ? 'readonly' : ''}>
+    </div>
+    <div class="form-group">
+      <label class="form-label">客户名称 *</label>
+      <input type="text" class="form-input" id="custName" value="${customer ? customer.name : ''}" required>
+    </div>
+    <div class="form-group">
+      <label class="form-label">客户账号（多个用逗号分隔）</label>
+      <input type="text" class="form-input" id="custAccounts" value="${customer ? (customer.accounts || []).join(', ') : ''}" placeholder="如：6222021234567890, 6222021234567891">
+    </div>
+    <div class="form-group">
+      <label class="form-label">客户类型 *</label>
+      <select class="form-select" id="custType">
+        <option value="enterprise" ${customer && customer.type === 'enterprise' ? 'selected' : ''}>企业客户</option>
+        <option value="personal" ${customer && customer.type === 'personal' ? 'selected' : ''}>个人客户</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">联系人</label>
+      <input type="text" class="form-input" id="custContact" value="${customer ? customer.contact || '' : ''}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">联系电话</label>
+      <input type="text" class="form-input" id="custPhone" value="${customer ? customer.phone || '' : ''}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">地址</label>
+      <input type="text" class="form-input" id="custAddress" value="${customer ? customer.address || '' : ''}">
+    </div>
+  </form>
+  <div style="margin-top:24px;display:flex;justify-content:flex-end;gap:12px;">
+    <button class="btn btn-secondary" onclick="App.closeModal('detailModal')">取消</button>
+    <button class="btn btn-primary" onclick="App.saveCustomer(${isEdit ? `'${customer.customerNo}'` : 'null'})">保存</button>
+  </div>
+`;
       },
 
-      editCustomer(id) {
-        const customer = this.data.customers.find(c => c.id === id);
-        if (customer) this.openCustomerModal(customer);
-      },
+editCustomer(customerNo) {
+  const customer = this.data.customers.find(c => c.customerNo === customerNo);
+  if (customer) this.openCustomerModal(customer);
+},
 
-saveCustomer(existingId) {
-const id = existingId || `C${String(this.data.customers.length + 1).padStart(3, '0')}`;
-const customerNo = document.getElementById('custNo').value.trim();
-const name = document.getElementById('custName').value;
-const accountsInput = document.getElementById('custAccounts').value;
-const accounts = accountsInput ? accountsInput.split(',').map(a => a.trim()).filter(a => a) : [];
-const type = document.getElementById('custType').value;
-const contact = document.getElementById('custContact').value;
-const phone = document.getElementById('custPhone').value;
-const address = document.getElementById('custAddress').value;
+saveCustomer(existingCustomerNo) {
+  const customerNo = document.getElementById('custNo').value.trim();
+  const name = document.getElementById('custName').value;
+  const accountsInput = document.getElementById('custAccounts').value;
+  const accounts = accountsInput ? accountsInput.split(',').map(a => a.trim()).filter(a => a) : [];
+  const type = document.getElementById('custType').value;
+  const contact = document.getElementById('custContact').value;
+  const phone = document.getElementById('custPhone').value;
+  const address = document.getElementById('custAddress').value;
 
-if (!customerNo) { alert('请输入客户号'); return; }
-if (!name) { alert('请输入客户名称'); return; }
+  if (!customerNo) { alert('请输入客户号'); return; }
+  if (!name) { alert('请输入客户名称'); return; }
 
-const customerData = { id, customerNo, name, accounts, type, contact, phone, address };
-if (existingId) {
-const idx = this.data.customers.findIndex(c => c.id === existingId);
-this.data.customers[idx] = customerData;
-} else {
-this.data.customers.push(customerData);
-}
+  const customerData = { customerNo, name, accounts, type, contact, phone, address };
+  if (existingCustomerNo) {
+    const idx = this.data.customers.findIndex(c => c.customerNo === existingCustomerNo);
+    this.data.customers[idx] = customerData;
+  } else {
+    this.data.customers.push(customerData);
+  }
 
-        this.saveData();
-        this.closeModal('detailModal');
-        this.render();
-        alert('保存成功');
-      },
+  this.saveData();
+  this.closeModal('detailModal');
+  this.render();
+  alert('保存成功');
+},
 
       renderDeposits() {
         const deposits = this.data.deposits;
@@ -2691,9 +2684,9 @@ showProjectDetail(id) {
     <div style="margin-top: 24px;">
       <h4 style="margin-bottom: 16px; font-size: 14px; color: var(--text-light);">任务清单</h4>
       <ul class="task-list">
-        ${[...project.tasks.filter(t => !t.completed), ...project.tasks.filter(t => t.completed)].map(t => {
-    const taskCustomer = t.customerId ? this.data.customers.find(c => c.id === t.customerId) : null;
-    const customerLabel = taskCustomer ? `<span style="font-size:11px;color:var(--text-light);margin-left:8px;">[${taskCustomer.name}${taskCustomer.customerNo ? ' ' + taskCustomer.customerNo : ''}]</span>` : '';
+${[...project.tasks.filter(t => !t.completed), ...project.tasks.filter(t => t.completed)].map(t => {
+  const taskCustomer = t.customerId ? this.data.customers.find(c => c.customerNo === t.customerId) : null;
+  const customerLabel = taskCustomer ? `<span style="font-size:11px;color:var(--text-light);margin-left:8px;">[${taskCustomer.name}${taskCustomer.customerNo ? ' ' + taskCustomer.customerNo : ''}]</span>` : '';
     return `
         <li class="task-item">
           <div class="task-checkbox ${t.completed ? 'checked' : ''}" onclick="App.toggleTask('${t.id}', '${project.id}')">
@@ -3011,12 +3004,12 @@ if (icon) icon.textContent = '▶';
         document.getElementById('detailModal').classList.add('active');
         document.querySelector('#detailModal .modal-title').textContent = isEdit ? '编辑存款' : '新增存款';
 
-        const renderDepositCustomerOptions = (filter = '') => {
-          const f = filter.toLowerCase();
-          return this.data.customers.filter(c => !f || c.name.toLowerCase().includes(f)).map(c =>
-            `<option value="${c.id}" ${deposit && deposit.customerId === c.id ? 'selected' : ''}>${c.name}</option>`
-          ).join('');
-        };
+const renderDepositCustomerOptions = (filter = '') => {
+  const f = filter.toLowerCase();
+  return this.data.customers.filter(c => !f || c.name.toLowerCase().includes(f)).map(c =>
+  `<option value="${c.customerNo}" ${deposit && deposit.customerId === c.customerNo ? 'selected' : ''}>${c.name}</option>`
+  ).join('');
+};
 
 document.getElementById('detailContent').innerHTML = `
 <form style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
@@ -3078,7 +3071,7 @@ document.getElementById('detailContent').innerHTML = `
 saveDeposit(existingId) {
   const id = existingId || `D${String(this.data.deposits.length + 1).padStart(3, '0')}`;
   const customerId = document.getElementById('depositCustomer').value;
-  const customerName = this.data.customers.find(c => c.id === customerId)?.name || '';
+  const customerName = this.data.customers.find(c => c.customerNo === customerId)?.name || '';
   const productName = document.getElementById('depositProductName').value || '';
   const type = document.getElementById('depositType').value;
   const amount = parseFloat(document.getElementById('depositAmount').value);
