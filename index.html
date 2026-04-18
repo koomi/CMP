@@ -1176,10 +1176,11 @@
   <script>
     const App = {
 data: {
-  projects: [],
-  customers: [],
-  deposits: [],
-  currentPage: 'dashboard',
+    projects: [],
+    customers: [],
+    deposits: [],
+    tasks: [],
+    currentPage: 'dashboard',
   searchQuery: '',
   filterStatus: '',
   filterStage: '',
@@ -1250,6 +1251,13 @@ loadData() {
     this.data.deposits = this.generateSampleDeposits();
     this.saveData();
   }
+  const taskStored = localStorage.getItem('creditTasks');
+  if (taskStored) {
+    this.data.tasks = JSON.parse(taskStored);
+  } else {
+    this.data.tasks = this.generateSampleTasks();
+    this.saveData();
+  }
   const optStored = localStorage.getItem('creditOptions');
   if (optStored) {
     this.data.options = JSON.parse(optStored);
@@ -1259,10 +1267,11 @@ loadData() {
 },
 
 saveData() {
-  localStorage.setItem('creditProjects', JSON.stringify(this.data.projects));
-  localStorage.setItem('creditCustomers', JSON.stringify(this.data.customers));
-  localStorage.setItem('creditDeposits', JSON.stringify(this.data.deposits));
-},
+    localStorage.setItem('creditProjects', JSON.stringify(this.data.projects));
+    localStorage.setItem('creditCustomers', JSON.stringify(this.data.customers));
+    localStorage.setItem('creditDeposits', JSON.stringify(this.data.deposits));
+    localStorage.setItem('creditTasks', JSON.stringify(this.data.tasks));
+  },
 
 saveOptions() {
   localStorage.setItem('creditOptions', JSON.stringify(this.data.options));
@@ -1312,7 +1321,21 @@ generateSampleDeposits() {
     { id: 'D005', customerId: '20260005', customerName: '杭州电子商务', amount: 6000000, type: '定期', productName: '定期存款A', date: '2025-04-05', rate: 2.15, ftpRate: 1.5, maturityDate: '2026-04-05' },
     { id: 'D006', customerId: '20260001', customerName: '北京创新科技有限公司', amount: 1500000, type: '活期', productName: '活期账户', date: '2025-04-18', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
     { id: 'D007', customerId: '20260006', customerName: '张三', amount: 500000, type: '定期', productName: '定期存款B', date: '2025-05-01', rate: 2.3, ftpRate: 1.65, maturityDate: '2026-05-01' },
-    { id: 'D008', customerId: '20260007', customerName: '李四', amount: 300000, type: '活期', productName: '活期账户', date: '2025-05-10', rate: 0.35, ftpRate: 0.2, maturityDate: '' }
+{ id: 'D008', customerId: '20260007', customerName: '李四', amount: 300000, type: '活期', productName: '活期账户', date: '2025-05-10', rate: 0.35, ftpRate: 0.2, maturityDate: '' }
+  ];
+},
+
+generateSampleTasks() {
+  const today = new Date();
+  return [
+    { id: 'T001', title: '客户尽职调查', customerNo: '20260001', dueDate: new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
+    { id: 'T002', title: '资料收集与核实', customerNo: '20260001', dueDate: new Date(today.getTime() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
+    { id: 'T003', title: '信用评估报告', customerNo: '20260002', dueDate: new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
+    { id: 'T004', title: '实地考察', customerNo: '20260003', dueDate: new Date(today.getTime() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
+    { id: 'T005', title: '初审评估', customerNo: '20260002', dueDate: new Date(today.getTime() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: true },
+    { id: 'T006', title: '合同签订', customerNo: '20260004', dueDate: new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
+    { id: 'T007', title: '首次检查', customerNo: '20260005', dueDate: new Date(today.getTime() + 20 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
+    { id: 'T008', title: '定期检查', customerNo: '20260001', dueDate: new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false }
   ];
 },
 
@@ -1788,7 +1811,9 @@ renderDashboard() {
     return (urgencyOrder[b.urgency] || 1) - (urgencyOrder[a.urgency] || 1);
   }).slice(0, 5);
   const recentProjects = this.getFilteredProjects().slice(0, 5);
-  const pendingTasks = this.data.projects.flatMap(p => p.tasks.filter(t => !t.completed)).slice(0, 8);
+  const projectTasks = this.data.projects.flatMap(p => p.tasks.filter(t => !t.completed));
+  const standaloneTasks = this.data.tasks.filter(t => !t.completed);
+  const pendingTasks = [...projectTasks, ...standaloneTasks].slice(0, 8);
 
   const currentTab = this.data.projectTab;
   const displayProjects = currentTab === 'unfinished' ? unfinishedProjects : (currentTab === 'important' ? importantProjects : recentProjects);
@@ -1860,32 +1885,36 @@ renderDashboard() {
   </div>
 </div>
 
-    <div class="section fade-in">
-      <div class="section-header">
-        <h3 class="section-title">待办任务</h3>
+<div class="section fade-in">
+  <div class="section-header">
+    <h3 class="section-title">待办任务</h3>
+  </div>
+  <div class="section-body">
+  ${pendingTasks.length > 0 ? `
+  <ul class="task-list">
+  ${pendingTasks.map(t => {
+    const isStandalone = !this.data.projects.some(p => p.tasks && p.tasks.some(pt => pt.id === t.id));
+    const customer = isStandalone ? this.data.customers.find(c => c.customerNo === t.customerNo) : null;
+    return `
+    <li class="task-item">
+      <div class="task-checkbox" onclick="${isStandalone ? `App.toggleStandaloneTask('${t.id}')` : `App.toggleTask('${t.id}')`}"></div>
+      <div class="task-content">
+        <div class="task-title">${t.title}</div>
+        <div class="task-meta">${isStandalone ? (customer ? `客户: ${customer.name}` : '') : '项目: ' + (this.data.projects.find(p => p.tasks && p.tasks.some(pt => pt.id === t.id))?.name || '')}</div>
       </div>
-      <div class="section-body">
-        ${pendingTasks.length > 0 ? `
-        <ul class="task-list">
-          ${pendingTasks.map(t => `
-          <li class="task-item">
-            <div class="task-checkbox" onclick="App.toggleTask('${t.id}')"></div>
-            <div class="task-content">
-              <div class="task-title">${t.title}</div>
-              <div class="task-meta">项目: ${this.data.projects.find(p => p.tasks.some(pt => pt.id === t.id))?.name}</div>
-            </div>
-          </li>
-          `).join('')}
-        </ul>
-        ` : `
-        <div class="empty-state">
-          <div class="empty-icon">✅</div>
-          <p>暂无数待办任务</p>
-        </div>
-        `}
-      </div>
-    </div>
+    </li>
     `;
+  }).join('')}
+  </ul>
+  ` : `
+  <div class="empty-state">
+    <div class="empty-icon">✅</div>
+    <p>暂无数待办任务</p>
+  </div>
+  `}
+  </div>
+  </div>
+  `;
   },
 
 renderProjects() {
@@ -2008,92 +2037,184 @@ renderProjects() {
   },
 
 renderTasks() {
-  const projectsWithTasks = this.data.projects.map(p => {
-    const customerTasksMap = {};
-    (p.customerIds || []).forEach(cid => {
-      const customer = this.data.customers.find(c => c.customerNo === cid);
-      if (customer) {
-        customerTasksMap[cid] = {
-          customer: { customerNo: cid, name: customer.name },
-          tasks: p.tasks.map(t => ({ ...t, customerId: cid }))
-        };
-      }
-    });
-    const allTasks = [];
-    Object.keys(customerTasksMap).forEach(cid => {
-      const ct = customerTasksMap[cid];
-      ct.tasks.forEach(t => {
-        allTasks.push({ ...t, customerId: cid });
-      });
-    });
-    return {
-      ...p,
-      customerTasksMap,
-      pendingTasks: allTasks.filter(t => !t.completed),
-      completedTasks: allTasks.filter(t => t.completed)
-    };
-  }).filter(p => (p.customerIds || []).length > 0 && p.tasks.length > 0);
+  const tasks = this.data.tasks;
+  const customers = this.data.customers;
+  const filterCustomer = this.data.filterTaskCustomer || '';
 
-return `
-<div class="fade-in">
-${projectsWithTasks.length > 0 ? projectsWithTasks.map((p, pIdx) => `
-<div class="card" style="margin-bottom: 16px;">
-<div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding-bottom:12px;border-bottom:1px solid var(--border);" onclick="App.toggleTaskSection('taskSection${pIdx}')">
-<div style="display:flex;align-items:center;gap:12px;">
-<span id="taskIcon${pIdx}" style="font-size:12px;">▼</span>
-<div>
-<h3 style="font-size:16px;color:var(--primary);cursor:pointer;" onclick="event.stopPropagation();App.showProjectDetail('${p.id}')">${p.name}</h3>
-<div style="font-size:12px;color:var(--text-light);">${(p.customerNames || []).join(', ')}</div>
+  const filteredTasks = filterCustomer 
+    ? tasks.filter(t => t.customerNo === filterCustomer)
+    : tasks;
+
+  const pendingTasks = filteredTasks.filter(t => !t.completed);
+  const completedTasks = filteredTasks.filter(t => t.completed);
+
+  const getCustomerName = (customerNo) => {
+    const c = customers.find(cust => cust.customerNo === customerNo);
+    return c ? c.name : '-';
+  };
+
+  const isOverdue = (dueDate) => {
+    if (!dueDate) return false;
+    return new Date(dueDate) < new Date(new Date().toDateString());
+  };
+
+  return `
+  <div class="fade-in">
+    <div class="filter-bar">
+      <select class="filter-select" id="taskCustomerFilter" onchange="App.filterTasksByCustomer()">
+        <option value="">全部客户</option>
+        ${customers.map(c => `<option value="${c.customerNo}" ${filterCustomer === c.customerNo ? 'selected' : ''}>${c.name}</option>`).join('')}
+      </select>
+      <button class="btn btn-primary" onclick="App.openTaskModal()">+ 新增任务</button>
+    </div>
+
+    <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
+      <div class="stat-card">
+        <div class="stat-icon warning">⏳</div>
+        <div class="stat-value">${pendingTasks.length}</div>
+        <div class="stat-label">待办任务</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon accent">✓</div>
+        <div class="stat-value">${completedTasks.length}</div>
+        <div class="stat-label">已完成</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon danger">⚠️</div>
+        <div class="stat-value">${pendingTasks.filter(t => isOverdue(t.dueDate)).length}</div>
+        <div class="stat-label">已逾期</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3 class="section-title">任务列表</h3>
+      </div>
+      <div class="section-body">
+        ${filteredTasks.length > 0 ? `
+        <table class="projects-table">
+          <thead>
+            <tr>
+              <th style="width:40px;">状态</th>
+              <th>任务标题</th>
+              <th>客户</th>
+              <th>到期时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${[...pendingTasks, ...completedTasks].map(t => {
+              const overdue = !t.completed && isOverdue(t.dueDate);
+              return `
+              <tr>
+                <td>
+                  <div class="task-checkbox ${t.completed ? 'checked' : ''}" onclick="App.toggleStandaloneTask('${t.id}')" style="cursor:pointer;">
+                    ${t.completed ? '✓' : ''}
+                  </div>
+                </td>
+                <td><span class="${t.completed ? 'checked' : ''}" style="${t.completed ? 'text-decoration:line-through;color:var(--text-lighter);' : ''}">${t.title}</span></td>
+                <td>${getCustomerName(t.customerNo)}</td>
+                <td style="${overdue ? 'color:var(--danger);font-weight:600;' : ''}">${t.dueDate || '-'}${overdue ? ' <span style="font-size:11px;background:var(--danger);color:white;padding:2px 6px;border-radius:4px;">逾期</span>' : ''}</td>
+                <td>
+                  <button class="btn btn-secondary" style="padding:4px 8px;font-size:12px;margin-right:4px;" onclick="App.editTask('${t.id}')">编辑</button>
+                  <button class="btn btn-danger" style="padding:4px 8px;font-size:12px;" onclick="App.deleteTask('${t.id}')">删除</button>
+                </td>
+              </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+        ` : `
+        <div class="empty-state">
+          <div class="empty-icon">✅</div>
+          <p>暂无任务</p>
+        </div>
+        `}
 </div>
-</div>
-<div style="text-align:right;">
-<span class="stage-badge ${p.stage}">${this.getStageText(p.stage)}</span>
-<div style="font-size:12px;color:var(--text-light);margin-top:4px;">
-待办: ${p.pendingTasks.length} | 已完成: ${p.completedTasks.length}
-</div>
-</div>
-</div>
-<div id="taskSection${pIdx}">
-${Object.keys(p.customerTasksMap || {}).map((cid, cIdx) => {
-const ct = p.customerTasksMap[cid];
-const pendingTasks = ct.tasks.filter(t => !t.completed);
-const completedTasks = ct.tasks.filter(t => t.completed);
-return `
-<div style="margin-bottom:16px;padding:12px;background:var(--bg);border-radius:4px;">
-<div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onclick="App.toggleTaskSection('custTaskSection${pIdx}_${cIdx}')">
-<span style="font-size:13px;color:var(--secondary);font-weight:500;">客户: ${ct.customer.name} ${ct.customer.customerNo ? `(${ct.customer.customerNo})` : ''}</span>
-<span id="custTaskIcon${pIdx}_${cIdx}" style="font-size:12px;">▼</span>
-</div>
-<div id="custTaskSection${pIdx}_${cIdx}" style="margin-top:12px;">
-<ul class="task-list" style="margin-left:0;">
-${[...pendingTasks, ...completedTasks].map(t => `
-<li class="task-item">
-<div class="task-checkbox ${t.completed ? 'checked' : ''}" onclick="App.toggleTask('${t.id}', '${p.id}')">
-${t.completed ? '✓' : ''}
-</div>
-<div class="task-content">
-<div class="task-title ${t.completed ? 'checked' : ''}">${t.title}</div>
-</div>
-</li>
-`).join('')}
-</ul>
-</div>
-</div>
-`;
-}).join('')}
-</div>
-</div>
-`).join('') : `
-<div class="card">
-<div class="empty-state">
-<div class="empty-icon">✅</div>
-<p>暂无项目任务</p>
-</div>
-</div>
-`}
-</div>
-`;
-      },
+  </div>
+  </div>
+  `;
+},
+
+filterTasksByCustomer() {
+  const filter = document.getElementById('taskCustomerFilter');
+  this.data.filterTaskCustomer = filter ? filter.value : '';
+  this.render();
+},
+
+openTaskModal(task = null) {
+  const isEdit = task != null;
+  document.getElementById('detailModal').classList.add('active');
+  document.querySelector('#detailModal .modal-title').textContent = isEdit ? '编辑任务' : '新增任务';
+
+  document.getElementById('detailContent').innerHTML = `
+    <form style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+      <div class="form-group">
+        <label class="form-label">任务标题 *</label>
+        <input type="text" class="form-input" id="taskTitle" value="${task ? task.title : ''}" placeholder="请输入任务标题" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">客户 *</label>
+        <select class="form-select" id="taskCustomer" required>
+          <option value="">请选择客户</option>
+          ${this.data.customers.map(c => `<option value="${c.customerNo}" ${task && task.customerNo === c.customerNo ? 'selected' : ''}>${c.name}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group" style="grid-column: span 2;">
+        <label class="form-label">到期时间</label>
+        <input type="date" class="form-input" id="taskDueDate" value="${task ? task.dueDate : ''}">
+      </div>
+    </form>
+    <div style="margin-top:24px;display:flex;justify-content:flex-end;gap:12px;">
+      <button class="btn btn-secondary" onclick="App.closeModal('detailModal')">取消</button>
+      <button class="btn btn-primary" onclick="App.saveTask(${isEdit ? `'${task.id}'` : 'null'})">保存</button>
+    </div>
+  `;
+},
+
+editTask(id) {
+  const task = this.data.tasks.find(t => t.id === id);
+  if (task) this.openTaskModal(task);
+},
+
+deleteTask(id) {
+  if (confirm('确定要删除这个任务吗？')) {
+    this.data.tasks = this.data.tasks.filter(t => t.id !== id);
+    this.saveData();
+    this.render();
+  }
+},
+
+saveTask(existingId) {
+  const title = document.getElementById('taskTitle').value.trim();
+  const customerNo = document.getElementById('taskCustomer').value;
+  const dueDate = document.getElementById('taskDueDate').value;
+
+  if (!title) { alert('请输入任务标题'); return; }
+  if (!customerNo) { alert('请选择客户'); return; }
+
+  if (existingId) {
+    const idx = this.data.tasks.findIndex(t => t.id === existingId);
+    this.data.tasks[idx] = { id: existingId, title, customerNo, dueDate, completed: this.data.tasks[idx].completed };
+  } else {
+    const newId = 'T' + String(this.data.tasks.length + 1).padStart(3, '0');
+    this.data.tasks.push({ id: newId, title, customerNo, dueDate, completed: false });
+  }
+
+  this.saveData();
+  this.closeModal('detailModal');
+  this.render();
+  alert('保存成功');
+},
+
+toggleStandaloneTask(id) {
+  const task = this.data.tasks.find(t => t.id === id);
+  if (task) {
+    task.completed = !task.completed;
+    this.saveData();
+    this.render();
+  }
+},
 
 renderStatistics() {
     const stats = this.getStats();
