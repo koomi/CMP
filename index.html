@@ -1302,26 +1302,53 @@ initOptionDropdowns() {
 
 generateSampleCustomers() {
   return [
-    { customerNo: '20260001', name: '北京创新科技有限公司', accounts: ['6222021100012345678', '6222021100012345679'], type: 'enterprise', contact: '张总', phone: '13800138000', address: '北京市朝阳区' },
-    { customerNo: '20260002', name: '上海国际贸易集团', accounts: ['6222021100012345680'], type: 'enterprise', contact: '李经理', phone: '13800138001', address: '上海市浦东新区' },
-    { customerNo: '20260003', name: '深圳智能制造企业', accounts: ['6222021100012345681', '6222021100012345682'], type: 'enterprise', contact: '王总', phone: '13800138002', address: '深圳市南山区' },
-    { customerNo: '20260004', name: '广州物流运输公司', accounts: ['6222021100012345683'], type: 'enterprise', contact: '刘总', phone: '13800138003', address: '广州市天河区' },
-    { customerNo: '20260005', name: '杭州电子商务', accounts: ['6222021100012345684', '6222021100012345685'], type: 'enterprise', contact: '陈总', phone: '13800138004', address: '杭州市滨江区' },
-    { customerNo: '20260006', name: '张三', accounts: ['6222021100012345686'], type: 'personal', phone: '13900139000' },
-    { customerNo: '20260007', name: '李四', accounts: ['6222021100012345687', '6222021100012345688'], type: 'personal', phone: '13900139001' }
+    { customerNo: '20260001', name: '北京创新科技有限公司', accounts: ['6222021100012345678', '6222021100012345679'], type: 'enterprise', contact: '张总', phone: '13800138000', address: '北京市朝阳区建国路88号' },
+    { customerNo: '20260002', name: '上海国际贸易集团', accounts: ['6222021100012345680'], type: 'enterprise', contact: '李经理', phone: '13800138001', address: '上海市浦东新区陆家嘴环路1000号' },
+    { customerNo: '20260003', name: '深圳智能制造企业', accounts: ['6222021100012345681', '6222021100012345682'], type: 'enterprise', contact: '王总', phone: '13800138002', address: '深圳市南山区科技园南区高新南七道' },
+    { customerNo: '20260004', name: '广州物流运输公司', accounts: ['6222021100012345683'], type: 'enterprise', contact: '刘总', phone: '13800138003', address: '广州市天河区珠江新城花城大道' },
+    { customerNo: '20260005', name: '杭州电子商务有限公司', accounts: ['6222021100012345684', '6222021100012345685'], type: 'enterprise', contact: '陈总', phone: '13800138004', address: '杭州市滨江区网商路599号' },
+    { customerNo: '20260006', name: '成都软件开发中心', accounts: ['6222021100012345686'], type: 'enterprise', contact: '赵总', phone: '13800138005', address: '成都市高新区天府大道中段666号' },
+    { customerNo: '20260007', name: '武汉新能源科技集团', accounts: ['6222021100012345687', '6222021100012345688'], type: 'enterprise', contact: '孙总', phone: '13800138006', address: '武汉市光谷大道77号光谷金融港' },
+    { customerNo: '20260008', name: '南京制造业集团', accounts: ['6222021100012345689'], type: 'enterprise', contact: '周总', phone: '13800138007', address: '南京市江宁区将军大道100号' },
+    { customerNo: '20260009', name: '西安高新材料公司', accounts: ['6222021100012345690'], type: 'enterprise', contact: '吴总', phone: '13800138008', address: '西安市高新区科技二路65号' },
+    { customerNo: '20260010', name: '重庆文化旅游投资', accounts: ['6222021100012345691', '6222021100012345692'], type: 'enterprise', contact: '郑总', phone: '13800138009', address: '重庆市渝中区解放碑步行街88号' },
+    { customerNo: '20260011', name: '天津港口物流集团', accounts: ['6222021100012345693'], type: 'enterprise', contact: '冯总', phone: '13800138010', address: '天津市滨海新区港口一路88号' },
+    { customerNo: '20260012', name: '苏州工业园区发展', accounts: ['6222021100012345694'], type: 'enterprise', contact: '陈总', phone: '13800138011', address: '苏州市工业园区星湖街328号' },
+    { customerNo: '20260013', name: '青岛海洋工程集团', accounts: ['6222021100012345695', '6222021100012345696'], type: 'enterprise', contact: '褚总', phone: '13800138012', address: '青岛市黄岛区港口路888号' },
+    { customerNo: '20260014', name: '大连船舶重工公司', accounts: ['6222021100012345697'], type: 'enterprise', contact: '卫总', phone: '13800138013', address: '大连市甘井子区大连湾街168号' },
+    { customerNo: '20260015', name: '长沙智能装备制造', accounts: ['6222021100012345698'], type: 'enterprise', contact: '蒋总', phone: '13800138014', address: '长沙市高新区麓谷大道668号' },
+    { customerNo: '20260016', name: '张三', accounts: ['6222021100012345699'], type: 'personal', phone: '13900139000', address: '北京市海淀区中关村大街1号' },
+    { customerNo: '20260017', name: '李四', accounts: ['6222021100012345700', '6222021100012345701'], type: 'personal', phone: '13900139001', address: '上海市静安区南京西路1788号' },
+    { customerNo: '20260018', name: '王五', accounts: ['6222021100012345702'], type: 'personal', phone: '13900139002', address: '深圳市福田区深南大道10088号' },
+    { customerNo: '20260019', name: '赵六', accounts: ['6222021100012345703'], type: 'personal', phone: '13900139003', address: '广州市天河区天河路385号' },
+    { customerNo: '20260020', name: '钱七', accounts: ['6222021100012345704', '6222021100012345705'], type: 'personal', phone: '13900139004', address: '杭州市西湖区文二路388号' }
   ];
 },
 
 generateSampleDeposits() {
   return [
-    { id: 'D001', customerId: '20260001', customerName: '北京创新科技有限公司', amount: 5000000, type: '定期', productName: '定期存款A', date: '2025-01-15', rate: 2.1, ftpRate: 1.5, maturityDate: '2026-01-15' },
-    { id: 'D002', customerId: '20260002', customerName: '上海国际贸易集团', amount: 8000000, type: '活期', productName: '活期账户', date: '2025-02-20', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
-    { id: 'D003', customerId: '20260003', customerName: '深圳智能制造企业', amount: 3000000, type: '定期', productName: '定期存款B', date: '2025-03-10', rate: 2.25, ftpRate: 1.6, maturityDate: '2026-03-10' },
-    { id: 'D004', customerId: '20260004', customerName: '广州物流运输公司', amount: 2000000, type: '活期', productName: '活期账户', date: '2025-03-25', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
-    { id: 'D005', customerId: '20260005', customerName: '杭州电子商务', amount: 6000000, type: '定期', productName: '定期存款A', date: '2025-04-05', rate: 2.15, ftpRate: 1.5, maturityDate: '2026-04-05' },
-    { id: 'D006', customerId: '20260001', customerName: '北京创新科技有限公司', amount: 1500000, type: '活期', productName: '活期账户', date: '2025-04-18', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
-    { id: 'D007', customerId: '20260006', customerName: '张三', amount: 500000, type: '定期', productName: '定期存款B', date: '2025-05-01', rate: 2.3, ftpRate: 1.65, maturityDate: '2026-05-01' },
-{ id: 'D008', customerId: '20260007', customerName: '李四', amount: 300000, type: '活期', productName: '活期账户', date: '2025-05-10', rate: 0.35, ftpRate: 0.2, maturityDate: '' }
+    { id: 'D001', customerId: '20260001', customerName: '北京创新科技有限公司', amount: 5000000, type: '定期', productName: '定期存款A款', date: '2025-01-15', rate: 2.1, ftpRate: 1.5, maturityDate: '2026-01-15' },
+    { id: 'D002', customerId: '20260002', customerName: '上海国际贸易集团', amount: 8000000, type: '活期', productName: '活期结算账户', date: '2025-02-20', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
+    { id: 'D003', customerId: '20260003', customerName: '深圳智能制造企业', amount: 3000000, type: '定期', productName: '定期存款B款', date: '2025-03-10', rate: 2.25, ftpRate: 1.6, maturityDate: '2026-03-10' },
+    { id: 'D004', customerId: '20260004', customerName: '广州物流运输公司', amount: 2000000, type: '活期', productName: '活期结算账户', date: '2025-03-25', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
+    { id: 'D005', customerId: '20260005', customerName: '杭州电子商务有限公司', amount: 6000000, type: '定期', productName: '定期存款A款', date: '2025-04-05', rate: 2.15, ftpRate: 1.5, maturityDate: '2026-04-05' },
+    { id: 'D006', customerId: '20260001', customerName: '北京创新科技有限公司', amount: 1500000, type: '活期', productName: '活期结算账户', date: '2025-04-18', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
+    { id: 'D007', customerId: '20260016', customerName: '张三', amount: 500000, type: '定期', productName: '定期存款B款', date: '2025-05-01', rate: 2.3, ftpRate: 1.65, maturityDate: '2026-05-01' },
+    { id: 'D008', customerId: '20260017', customerName: '李四', amount: 300000, type: '活期', productName: '活期结算账户', date: '2025-05-10', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
+    { id: 'D009', customerId: '20260006', customerName: '成都软件开发中心', amount: 4500000, type: '定期', productName: '定期存款C款', date: '2025-06-01', rate: 2.2, ftpRate: 1.55, maturityDate: '2026-06-01' },
+    { id: 'D010', customerId: '20260007', customerName: '武汉新能源科技集团', amount: 12000000, type: '活期', productName: '活期结算账户', date: '2025-06-15', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
+    { id: 'D011', customerId: '20260008', customerName: '南京制造业集团', amount: 2500000, type: '定期', productName: '定期存款A款', date: '2025-07-01', rate: 2.1, ftpRate: 1.5, maturityDate: '2026-07-01' },
+    { id: 'D012', customerId: '20260009', customerName: '西安高新材料公司', amount: 1800000, type: '活期', productName: '活期结算账户', date: '2025-07-20', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
+    { id: 'D013', customerId: '20260010', customerName: '重庆文化旅游投资', amount: 3500000, type: '定期', productName: '定期存款B款', date: '2025-08-05', rate: 2.25, ftpRate: 1.6, maturityDate: '2026-08-05' },
+    { id: 'D014', customerId: '20260018', customerName: '王五', amount: 800000, type: '定期', productName: '定期存款C款', date: '2025-08-18', rate: 2.35, ftpRate: 1.7, maturityDate: '2026-08-18' },
+    { id: 'D015', customerId: '20260011', customerName: '天津港口物流集团', amount: 9000000, type: '活期', productName: '活期结算账户', date: '2025-09-01', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
+    { id: 'D016', customerId: '20260012', customerName: '苏州工业园区发展', amount: 6500000, type: '定期', productName: '定期存款A款', date: '2025-09-15', rate: 2.15, ftpRate: 1.5, maturityDate: '2026-09-15' },
+    { id: 'D017', customerId: '20260013', customerName: '青岛海洋工程集团', amount: 4200000, type: '定期', productName: '定期存款D款', date: '2025-10-01', rate: 2.3, ftpRate: 1.65, maturityDate: '2026-10-01' },
+    { id: 'D018', customerId: '20260019', customerName: '赵六', amount: 250000, type: '活期', productName: '活期结算账户', date: '2025-10-20', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
+    { id: 'D019', customerId: '20260014', customerName: '大连船舶重工公司', amount: 15000000, type: '活期', productName: '活期结算账户', date: '2025-11-01', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
+    { id: 'D020', customerId: '20260015', customerName: '长沙智能装备制造', amount: 2800000, type: '定期', productName: '定期存款B款', date: '2025-11-15', rate: 2.2, ftpRate: 1.55, maturityDate: '2026-11-15' },
+    { id: 'D021', customerId: '20260020', customerName: '钱七', amount: 1200000, type: '活期', productName: '活期结算账户', date: '2025-12-01', rate: 0.35, ftpRate: 0.2, maturityDate: '' },
+    { id: 'D022', customerId: '20260002', customerName: '上海国际贸易集团', amount: 5500000, type: '定期', productName: '定期存款C款', date: '2025-12-10', rate: 2.05, ftpRate: 1.45, maturityDate: '2026-12-10' }
   ];
 },
 
@@ -1335,30 +1362,43 @@ generateSampleTasks() {
     { id: 'T005', title: '初审评估', customerNo: '20260002', dueDate: new Date(today.getTime() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: true },
     { id: 'T006', title: '合同签订', customerNo: '20260004', dueDate: new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
     { id: 'T007', title: '首次检查', customerNo: '20260005', dueDate: new Date(today.getTime() + 20 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
-    { id: 'T008', title: '定期检查', customerNo: '20260001', dueDate: new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false }
+    { id: 'T008', title: '定期检查', customerNo: '20260001', dueDate: new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
+    { id: 'T009', title: '风险评估更新', customerNo: '20260006', dueDate: new Date(today.getTime() + 4 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
+    { id: 'T010', title: '担保物评估', customerNo: '20260007', dueDate: new Date(today.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
+    { id: 'T011', title: '还款能力分析', customerNo: '20260008', dueDate: new Date(today.getTime() + 8 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
+    { id: 'T012', title: '贷款展期审批', customerNo: '20260009', dueDate: new Date(today.getTime() + 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
+    { id: 'T013', title: '抵押物变更手续', customerNo: '20260010', dueDate: new Date(today.getTime() + 12 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
+    { id: 'T014', title: '年度审计报告', customerNo: '20260011', dueDate: new Date(today.getTime() + 25 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
+    { id: 'T015', title: '客户信用复评', customerNo: '20260012', dueDate: new Date(today.getTime() + 35 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
+    { id: 'T016', title: '提前还款沟通', customerNo: '20260013', dueDate: new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: true },
+    { id: 'T017', title: '新客户开发', customerNo: '20260014', dueDate: new Date(today.getTime() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
+    { id: 'T018', title: '贷后跟踪报告', customerNo: '20260015', dueDate: new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
+    { id: 'T019', title: '利率调整通知', customerNo: '20260016', dueDate: new Date(today.getTime() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
+    { id: 'T020', title: '合作协议续签', customerNo: '20260017', dueDate: new Date(today.getTime() + 45 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false }
   ];
 },
 
 generateSampleData() {
-      const customers = ['北京创新科技有限公司', '上海国际贸易集团', '深圳智能制造企业', '广州物流运输公司', '杭州电子商务', '成都软件开发', '武汉新能源科技', '南京制造业', '西安高新材料', '重庆文化旅游'];
+      const customers = ['北京创新科技有限公司', '上海国际贸易集团', '深圳智能制造企业', '广州物流运输公司', '杭州电子商务有限公司', '成都软件开发中心', '武汉新能源科技集团', '南京制造业集团', '西安高新材料公司', '重庆文化旅游投资', '天津港口物流集团', '苏州工业园区发展', '青岛海洋工程集团', '大连船舶重工公司', '长沙智能装备制造', '张三', '李四', '王五', '赵六', '钱七'];
       const statuses = ['pending', 'processing', 'completed', 'rejected'];
       const stages = ['pre', 'mid', 'post'];
       const urgencies = ['normal', 'urgent', 'very_urgent'];
+      const projectNames = ['流动资金贷款', '项目贷款', '设备采购贷款', '技术改造贷款', '扩建项目贷款', '研发项目贷款', '并购贷款', '周转贷款', '供应链金融', '信用贷款', '抵押贷款', '担保贷款', '质押贷款', '循环贷款', '固定资产贷款', '经营性贷款', '项目融资', '过桥贷款', '并购融资', '出口信贷'];
       const projects = [];
 
-      for (let i = 0; i < 15; i++) {
+      for (let i = 0; i < 30; i++) {
         const status = statuses[Math.floor(Math.random() * statuses.length)];
         const stage = status === 'completed' ? 'post' : stages[Math.floor(Math.random() * 3)];
-        const amount = Math.floor(Math.random() * 10000000) + 500000;
-        const createdAt = new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000);
+        const amount = Math.floor(Math.random() * 15000000) + 500000;
+        const createdAt = new Date(Date.now() - Math.random() * 180 * 24 * 60 * 60 * 1000);
 
         projects.push({
           id: `PRJ${String(2026001 + i).padStart(6, '0')}`,
-          name: `授信项目-${customers[i % customers.length]}`,
+          name: `${projectNames[i % projectNames.length]}-${customers[i % customers.length]}`,
           customerName: customers[i % customers.length],
-          customerType: i % 2 === 0 ? 'enterprise' : 'personal',
+          customerType: i % 3 === 0 ? 'enterprise' : 'personal',
           amount: amount,
-          term: [6, 12, 24, 36][Math.floor(Math.random() * 4)],
+          term: [3, 6, 12, 24, 36][Math.floor(Math.random() * 5)],
           rate: (Math.random() * 3 + 3.5).toFixed(2),
           guaranteeType: ['credit', 'mortgage', 'pledge', 'guarantee'][Math.floor(Math.random() * 4)],
           status: status,
@@ -1550,8 +1590,10 @@ depositCustomerFilter: '',
           c.name.toLowerCase().includes(filter) || (c.contact || '').toLowerCase().includes(filter)
         );
         container.innerHTML = filtered.map(c => `
-        <div style="display:flex;align-items:center;gap:8px;padding:6px;border-bottom:1px solid var(--border);cursor:pointer;" onclick="App.toggleDepositCustomer('${c.customerNo}')">
-        <input type="checkbox" ${this.currentDepositSelectedCustomer.includes(c.customerNo) ? 'checked' : ''} onclick="event.stopPropagation();App.toggleDepositCustomer('${c.customerNo}')">
+        <div style="display:flex;align-items:center;gap:8px;padding:6px;border-bottom:1px solid var(--border);cursor:pointer;${this.currentDepositSelectedCustomer.includes(c.customerNo) ? 'background:rgba(56,161,105,0.1);' : ''}" onclick="App.toggleDepositCustomer('${c.customerNo}')">
+        <div style="width:16px;height:16px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;${this.currentDepositSelectedCustomer.includes(c.customerNo) ? 'border-color:var(--accent);background:var(--accent);' : ''}">
+          ${this.currentDepositSelectedCustomer.includes(c.customerNo) ? '<div style="width:6px;height:6px;background:white;border-radius:50%;"></div>' : ''}
+        </div>
         <div>
           <div style="font-weight:500;">${c.name}</div>
           <div style="font-size:12px;color:var(--text-light);">${c.type === 'enterprise' ? '企业' : '个人'} · ${c.phone || ''}</div>
@@ -3180,7 +3222,7 @@ openDepositModal(deposit = null) {
     <input type="text" class="form-input" id="depositId" value="${deposit ? deposit.id : ''}" ${isEdit ? 'readonly' : ''}>
   </div>
   <div class="form-group" style="grid-column: span 2;">
-    <label class="form-label">客户 *（可多选）</label>
+    <label class="form-label">客户 *</label>
     <input type="text" class="form-input" id="depositCustomerSearch" placeholder="搜索客户..." oninput="App.filterDepositCustomers(this.value)" style="margin-bottom:8px;">
     <div id="depositCustomerList" style="max-height:150px;overflow-y:auto;border:1px solid var(--border);border-radius:4px;padding:8px;">
     </div>
