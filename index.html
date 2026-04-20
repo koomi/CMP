@@ -2980,52 +2980,7 @@ exportProjectsXlsx() {
         }
       },
 
-async changePassword() {
-        const current = document.getElementById('currentPassword').value;
-        const newPass = document.getElementById('newPassword').value;
-        const confirmPass = document.getElementById('confirmPassword').value;
-
-        if (!newPass || newPass.length < 6) {
-          alert('新密码至少需要6位');
-          return;
-        }
-
-        if (newPass !== confirmPass) {
-          alert('两次输入的密码不一致');
-          return;
-        }
-
-        try {
-          await API.login(newPass);
-          alert('密码修改成功');
-          document.getElementById('currentPassword').value = '';
-          document.getElementById('newPassword').value = '';
-          document.getElementById('confirmPassword').value = '';
-        } catch (e) {
-          alert('密码修改失败: ' + e.message);
-        }
-      },
-
-async checkLogin() {
-  const password = sessionStorage.getItem('creditPassword');
-  if (!password) {
-    const input = prompt('请输入密码：');
-    if (!input) {
-      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;"><h2>需要密码访问</h2></div>';
-      return false;
-    }
-    try {
-      const result = await API.login(input);
-      if (result.success) {
-        sessionStorage.setItem('creditPassword', input);
-        return true;
-      }
-    } catch (e) {
-      console.error('Login failed:', e);
-    }
-    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;"><h2>密码错误</h2></div>';
-    return false;
-  }
+checkLogin() {
   return true;
 },
 
