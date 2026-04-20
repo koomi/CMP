@@ -1,0 +1,11 @@
+name = "credit-management-api"
+main = "workers/api/index.js"
+compatibility_date = "2024-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "credit-management-db"
+database_id = "c8d44cca-3f5c-4c42-a23e-0267f203aef7"
+
+[vars]
+API_PASSWORD = "admin123"
