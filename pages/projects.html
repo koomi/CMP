@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>项目管理 - 信贷项目管理平台</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏦</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">🏦</div>
+          <span class="logo-text">信贷管理平台</span>
+        </div>
+      </div>
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="dashboard.html" class="nav-link">
+            <span class="nav-icon">📊</span>
+            <span>仪表板</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="projects.html" class="nav-link active" onclick="App.toggleSubMenu(event, 'projectSubMenu')">
+            <span class="nav-icon">📁</span>
+            <span>项目管理</span>
+            <span style="margin-left:auto;font-size:12px;" id="projectSubMenuIcon">▼</span>
+          </a>
+          <ul class="sub-menu" id="projectSubMenu" style="display:none;list-style:none;padding-left:24px;">
+            <li><a href="projects.html" class="nav-link" style="padding:8px 24px;font-size:13px;" onclick="App.showAllProjects()">📋 全部项目</a></li>
+            <li><a href="projects.html" class="nav-link" style="padding:8px 24px;font-size:13px;" onclick="App.showStage('pre')">🔍 贷前调查</a></li>
+            <li><a href="projects.html" class="nav-link" style="padding:8px 24px;font-size:13px;" onclick="App.showStage('mid')">📋 贷中审批</a></li>
+            <li><a href="projects.html" class="nav-link" style="padding:8px 24px;font-size:13px;" onclick="App.showStage('post')">📊 贷后管理</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a href="tasks.html" class="nav-link">
+            <span class="nav-icon">✅</span>
+            <span>待办任务</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="statistics.html" class="nav-link">
+            <span class="nav-icon">📈</span>
+            <span>数据统计</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="customers.html" class="nav-link">
+            <span class="nav-icon">👥</span>
+            <span>客户管理</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="deposits.html" class="nav-link">
+            <span class="nav-icon">💵</span>
+            <span>存款管理</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="settings.html" class="nav-link">
+            <span class="nav-icon">⚙️</span>
+            <span>系统设置</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+          <h1 class="page-title" id="pageTitle">项目管理</h1>
+        </div>
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" placeholder="搜索项目..." id="searchInput">
+        </div>
+        <div class="topbar-right">
+          <button class="btn notifications-badge" id="notificationBtn">
+            🔔
+            <span class="notification-dot" id="notificationDot"></span>
+          </button>
+          <button class="btn btn-primary" id="newProjectBtn">
+            <span>+</span>新建项目
+          </button>
+        </div>
+      </header>
+
+      <div class="content" id="content">
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="projectModal">
+    <div class="modal" style="max-width: 900px;">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">新建项目</h2>
+        <button class="modal-close" id="modalClose">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="projectForm" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+          <div class="form-group">
+            <label class="form-label">项目编号</label>
+            <input type="text" class="form-input" id="projectCode" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-label">项目名称 *</label>
+            <input type="text" class="form-input" id="projectName" required placeholder="请输入项目名称">
+          </div>
+          <div class="form-group" style="grid-column: span 2;">
+            <label class="form-label">客户 *</label>
+            <input type="text" class="form-input" id="customerSearch" placeholder="搜索客户..." oninput="App.filterCustomers(this.value)" style="margin-bottom:8px;">
+            <div id="customerList" style="max-height:150px;overflow-y:auto;border:1px solid var(--border);border-radius:4px;padding:8px;">
+            </div>
+          </div>
+          <div class="form-group" style="grid-column: span 2;">
+            <label class="form-label">已选客户</label>
+            <div id="selectedCustomers" style="display:flex;flex-wrap:wrap;gap:8px;min-height:32px;padding:8px;background:var(--bg);border-radius:4px;"></div>
+          </div>
+          <div class="form-group" style="display:none;">
+            <label class="form-label">客户名称</label>
+            <input type="text" id="customerName">
+          </div>
+          <div class="form-group" style="display:none;">
+            <label class="form-label">客户类型</label>
+            <select class="form-select" id="customerType">
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">授信金额（元）*</label>
+            <input type="number" class="form-input" id="creditAmount" required placeholder="请输入授信金额" min="0" step="10000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">授信期限</label>
+            <select class="form-select" id="creditTerm">
+              <option value="3">3个月</option>
+              <option value="6">6个月</option>
+              <option value="12" selected>12个月</option>
+              <option value="24">24个月</option>
+              <option value="36">36个月</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">担保方式</label>
+            <select class="form-select" id="guaranteeType">
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">紧急度</label>
+            <select class="form-select" id="urgency">
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">当前阶段</label>
+            <select class="form-select" id="stage">
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">项目状态</label>
+            <select class="form-select" id="status">
+            </select>
+          </div>
+          <div class="form-group" style="grid-column: span 2;">
+            <label class="form-label">项目描述</label>
+            <textarea class="form-textarea" id="description" placeholder="请输入项目描述"></textarea>
+          </div>
+          <div class="form-group" style="grid-column: span 2;">
+            <label class="form-label">贷后管理任务日期设置</label>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:12px;min-width:60px;">第1次:</span>
+                <input type="date" class="form-input" id="postLoanTaskDate1" style="width:200px;">
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:12px;min-width:60px;">第2次:</span>
+                <input type="date" class="form-input" id="postLoanTaskDate2" style="width:200px;">
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:12px;min-width:60px;">第3次:</span>
+                <input type="date" class="form-input" id="postLoanTaskDate3" style="width:200px;">
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:12px;min-width:60px;">第4次:</span>
+                <input type="date" class="form-input" id="postLoanTaskDate4" style="width:200px;">
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelBtn">取消</button>
+        <button class="btn btn-primary" id="saveBtn">保存项目</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="detailModal">
+    <div class="modal" style="max-width: 900px;">
+      <div class="modal-header">
+        <h2 class="modal-title">项目详情</h2>
+        <button class="modal-close" id="detailModalClose">✕</button>
+      </div>
+      <div class="modal-body" id="detailContent">
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      App.loadData();
+      App.initOptionDropdowns();
+      App.bindEvents();
+      document.getElementById('content').innerHTML = App.renderProjects();
+    });
+  </script>
+</body>
+</html>

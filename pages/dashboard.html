@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>仪表板 - 信贷项目管理平台</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏦</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">🏦</div>
+          <span class="logo-text">信贷管理平台</span>
+        </div>
+      </div>
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="dashboard.html" class="nav-link active">
+            <span class="nav-icon">📊</span>
+            <span>仪表板</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="projects.html" class="nav-link" onclick="App.toggleSubMenu(event, 'projectSubMenu')">
+            <span class="nav-icon">📁</span>
+            <span>项目管理</span>
+            <span style="margin-left:auto;font-size:12px;" id="projectSubMenuIcon">▼</span>
+          </a>
+          <ul class="sub-menu" id="projectSubMenu" style="display:none;list-style:none;padding-left:24px;">
+            <li><a href="projects.html" class="nav-link" style="padding:8px 24px;font-size:13px;" onclick="App.showAllProjects()">📋 全部项目</a></li>
+            <li><a href="projects.html" class="nav-link" style="padding:8px 24px;font-size:13px;" onclick="App.showStage('pre')">🔍 贷前调查</a></li>
+            <li><a href="projects.html" class="nav-link" style="padding:8px 24px;font-size:13px;" onclick="App.showStage('mid')">📋 贷中审批</a></li>
+            <li><a href="projects.html" class="nav-link" style="padding:8px 24px;font-size:13px;" onclick="App.showStage('post')">📊 贷后管理</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a href="tasks.html" class="nav-link">
+            <span class="nav-icon">✅</span>
+            <span>待办任务</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="statistics.html" class="nav-link">
+            <span class="nav-icon">📈</span>
+            <span>数据统计</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="customers.html" class="nav-link">
+            <span class="nav-icon">👥</span>
+            <span>客户管理</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="deposits.html" class="nav-link">
+            <span class="nav-icon">💵</span>
+            <span>存款管理</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="settings.html" class="nav-link">
+            <span class="nav-icon">⚙️</span>
+            <span>系统设置</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+          <h1 class="page-title" id="pageTitle">仪表板</h1>
+        </div>
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" placeholder="搜索项目..." id="searchInput">
+        </div>
+        <div class="topbar-right">
+          <button class="btn notifications-badge" id="notificationBtn">
+            🔔
+            <span class="notification-dot" id="notificationDot"></span>
+          </button>
+          <button class="btn btn-primary" id="newProjectBtn">
+            <span>+</span>新建项目
+          </button>
+        </div>
+      </header>
+
+      <div class="content" id="content">
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      App.loadData();
+      App.initOptionDropdowns();
+      App.bindEvents();
+      document.getElementById('content').innerHTML = App.renderDashboard();
+    });
+  </script>
+</body>
+</html>
