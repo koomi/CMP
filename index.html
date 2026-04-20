@@ -1533,16 +1533,62 @@ renderCustomerList() {
         this.renderCustomerList();
       },
 
-      depositCustomerFilter: '',
+depositCustomerFilter: '',
 
-      filterDepositCustomer(value) {
+      filterDepositCustomers(value) {
         this.depositCustomerFilter = value;
-        const select = document.getElementById('depositCustomer');
-        if (select) {
-          const f = value.toLowerCase();
-select.innerHTML = this.data.customers.filter(c => !f || c.name.toLowerCase().includes(f)).map(c =>
-  `<option value="${c.customerNo}">${c.name}</option>`
-  ).join('');
+        this.renderDepositCustomerList();
+      },
+
+      currentDepositSelectedCustomer: [],
+
+      renderDepositCustomerList() {
+        const container = document.getElementById('depositCustomerList');
+        if (!container) return;
+        const filter = (this.depositCustomerFilter || '').toLowerCase();
+        const filtered = this.data.customers.filter(c =>
+          c.name.toLowerCase().includes(filter) || (c.contact || '').toLowerCase().includes(filter)
+        );
+        container.innerHTML = filtered.map(c => `
+        <div style="display:flex;align-items:center;gap:8px;padding:6px;border-bottom:1px solid var(--border);cursor:pointer;" onclick="App.toggleDepositCustomer('${c.customerNo}')">
+        <input type="checkbox" ${this.currentDepositSelectedCustomer.includes(c.customerNo) ? 'checked' : ''} onclick="event.stopPropagation();App.toggleDepositCustomer('${c.customerNo}')">
+        <div>
+          <div style="font-weight:500;">${c.name}</div>
+          <div style="font-size:12px;color:var(--text-light);">${c.type === 'enterprise' ? '企业' : '个人'} · ${c.phone || ''}</div>
+        </div>
+        </div>
+        `).join('');
+      },
+
+      toggleDepositCustomer(customerId) {
+        const idx = this.currentDepositSelectedCustomer.indexOf(customerId);
+        if (idx >= 0) {
+          this.currentDepositSelectedCustomer.splice(idx, 1);
+        } else {
+          this.currentDepositSelectedCustomer = [customerId];
+        }
+        this.renderDepositCustomerList();
+        this.updateDepositSelectedCustomers();
+      },
+
+      updateDepositSelectedCustomers() {
+        const container = document.getElementById('depositSelectedCustomers');
+        if (!container) return;
+        const customers = this.data.customers.filter(c => this.currentDepositSelectedCustomer.includes(c.customerNo));
+        container.innerHTML = customers.map(c => `
+        <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;background:var(--primary);color:white;border-radius:4px;font-size:12px;">
+        ${c.name}
+        <span style="cursor:pointer;" onclick="App.removeDepositCustomer('${c.customerNo}')">✕</span>
+        </span>
+        `).join('') || '<span style="color:var(--text-lighter);font-size:12px;">请从上方选择客户</span>';
+      },
+
+      removeDepositCustomer(customerId) {
+        const idx = this.currentDepositSelectedCustomer.indexOf(customerId);
+        if (idx >= 0) {
+          this.currentDepositSelectedCustomer.splice(idx, 1);
+          this.renderDepositCustomerList();
+          this.updateDepositSelectedCustomers();
         }
       },
 
@@ -3119,31 +3165,29 @@ if (icon) icon.textContent = '▶';
 }
 },
 
-      openDepositModal(deposit = null) {
+openDepositModal(deposit = null) {
         const isEdit = deposit != null;
         const content = document.getElementById('detailContent');
         document.getElementById('detailModal').classList.add('active');
         document.querySelector('#detailModal .modal-title').textContent = isEdit ? '编辑存款' : '新增存款';
 
-const renderDepositCustomerOptions = (filter = '') => {
-  const f = filter.toLowerCase();
-  return this.data.customers.filter(c => !f || c.name.toLowerCase().includes(f)).map(c =>
-  `<option value="${c.customerNo}" ${deposit && deposit.customerId === c.customerNo ? 'selected' : ''}>${c.name}</option>`
-  ).join('');
-};
+        this.currentDepositSelectedCustomer = deposit ? [deposit.customerId] : [];
 
-document.getElementById('detailContent').innerHTML = `
+        document.getElementById('detailContent').innerHTML = `
 <form style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
   <div class="form-group">
     <label class="form-label">存款编号</label>
     <input type="text" class="form-input" id="depositId" value="${deposit ? deposit.id : ''}" ${isEdit ? 'readonly' : ''}>
   </div>
-  <div class="form-group">
-    <label class="form-label">客户 *</label>
-    <input type="text" class="form-input" placeholder="搜索客户..." id="depositCustomerSearch" oninput="App.filterDepositCustomer(this.value)" style="margin-bottom:8px;">
-    <select class="form-select" id="depositCustomer" required size="4">
-      ${renderDepositCustomerOptions()}
-    </select>
+  <div class="form-group" style="grid-column: span 2;">
+    <label class="form-label">客户 *（可多选）</label>
+    <input type="text" class="form-input" id="depositCustomerSearch" placeholder="搜索客户..." oninput="App.filterDepositCustomers(this.value)" style="margin-bottom:8px;">
+    <div id="depositCustomerList" style="max-height:150px;overflow-y:auto;border:1px solid var(--border);border-radius:4px;padding:8px;">
+    </div>
+  </div>
+  <div class="form-group" style="grid-column: span 2;">
+    <label class="form-label">已选客户</label>
+    <div id="depositSelectedCustomers" style="display:flex;flex-wrap:wrap;gap:8px;min-height:32px;padding:8px;background:var(--bg);border-radius:4px;"></div>
   </div>
   <div class="form-group">
     <label class="form-label">产品名称</label>
@@ -3182,6 +3226,8 @@ document.getElementById('detailContent').innerHTML = `
   <button class="btn btn-primary" onclick="App.saveDeposit(${isEdit ? `'${deposit.id}'` : 'null'})">保存</button>
 </div>
 `;
+        this.renderDepositCustomerList();
+        this.updateDepositSelectedCustomers();
       },
 
       editDeposit(id) {
@@ -3191,7 +3237,7 @@ document.getElementById('detailContent').innerHTML = `
 
 saveDeposit(existingId) {
   const id = existingId || `D${String(this.data.deposits.length + 1).padStart(3, '0')}`;
-  const customerId = document.getElementById('depositCustomer').value;
+  const customerId = this.currentDepositSelectedCustomer[0] || '';
   const customerName = this.data.customers.find(c => c.customerNo === customerId)?.name || '';
   const productName = document.getElementById('depositProductName').value || '';
   const type = document.getElementById('depositType').value;
