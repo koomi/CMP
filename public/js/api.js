@@ -1,5 +1,5 @@
 const cf = {
-    API_BASE: ''
+    API_BASE: 'https://credit-management-api.koo.workers.dev'
 };
 
 async function apiRequest(endpoint, options = {}) {

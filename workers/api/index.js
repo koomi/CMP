@@ -112,7 +112,7 @@ Router.register('GET', '/init', async (req, env) => {
         const amount = Math.floor(Math.random() * 15000000) + 500000;
         const createdAt = new Date(Date.now() - Math.random() * 180 * 24 * 60 * 60 * 1000).toISOString();
         const customerName = customers[i % customers.length];
-        const customerNo = `20260${String(001 + (i % 20)).padStart(3, '0')}`;
+        const customerNo = `20260${String(1 + (i % 20)).padStart(3, '0')}`;
         const postLoanTaskDates = [
             new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
             new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],

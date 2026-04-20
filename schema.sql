@@ -21,8 +21,7 @@ CREATE TABLE IF NOT EXISTS projects (
     drawDate TEXT,
     postLoanTaskDates TEXT,
     tasks TEXT,
-    customerNo TEXT,
-    customerNames TEXT
+    customerNo TEXT
 );
 
 -- Customers table

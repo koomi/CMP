@@ -5,7 +5,7 @@ compatibility_date = "2024-01-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "credit-management-db"
-database_id = "YOUR_DATABASE_ID_HERE"
+database_id = "5521a062-faf9-4b04-803c-1ff891d9e488"
 
 [vars]
 API_PASSWORD = "admin123"
